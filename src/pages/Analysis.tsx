@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,13 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Table, 
   TableBody, 
-  TableCaption, 
   TableCell, 
   TableHead, 
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
 
 const Analysis = () => {
   const navigate = useNavigate();
@@ -28,9 +26,7 @@ const Analysis = () => {
   const [investmentAssets, setInvestmentAssets] = useState<number>(0);
   const [showResults, setShowResults] = useState(false);
 
-  // Calculate the financial health metrics
   const calculateFinancialHealth = () => {
-    // Prepare results
     const results = {
       liquidity: {
         value: cashEquivalents / monthlyExpenses,
@@ -69,7 +65,6 @@ const Analysis = () => {
       }
     };
 
-    // Apply the rules
     results.liquidity.isHealthy = results.liquidity.value >= 3 && results.liquidity.value <= 6;
     results.currentRatio.isHealthy = results.currentRatio.value > 1;
     results.savingsRatio.isHealthy = results.savingsRatio.value > 10;
@@ -94,12 +89,16 @@ const Analysis = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold text-gray-800">Analisis Kesehatan Keuangan</h1>
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold text-gray-800">Analisis Kesehatan Keuangan</h1>
+            <p className="text-gray-600">Evaluasi kondisi keuangan Anda secara menyeluruh</p>
+          </div>
           <Button 
             variant="outline" 
-            className="border-purple-400 text-purple-600 hover:bg-purple-50"
+            className="border-purple-400 text-purple-600 hover:bg-purple-50 flex items-center gap-2"
             onClick={() => navigate('/')}
           >
+            <ArrowLeft className="h-4 w-4" />
             Kembali ke Dashboard
           </Button>
         </div>
