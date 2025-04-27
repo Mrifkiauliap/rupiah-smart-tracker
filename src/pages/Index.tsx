@@ -6,12 +6,17 @@ import { PlusCircle, MinusCircle, ArrowUp, ArrowDown, Filter, History, ChartBar 
 import TransactionHistory from '@/components/TransactionHistory';
 import TransactionModal from '@/components/TransactionModal';
 import FinancialChart from '@/components/FinancialChart';
+import { Transaction } from '@/types/transaction';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const [showModal, setShowModal] = useState(false);
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>('income');
   const [balance, setBalance] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleAddTransaction = (transaction: Transaction) => {
     setTransactions(prev => [transaction, ...prev]);
@@ -20,22 +25,76 @@ const Index = () => {
         ? prev + transaction.amount 
         : prev - transaction.amount
     );
+    toast({
+      title: "Transaksi berhasil ditambahkan",
+      description: `${transaction.description} sebesar Rp ${transaction.amount.toLocaleString('id-ID')}`,
+    });
+  };
+
+  const handleEditTransaction = (id: string, updatedTransaction: Transaction) => {
+    const oldTransaction = transactions.find(t => t.id === id);
+    if (!oldTransaction) return;
+    
+    // Update balance
+    const balanceAdjustment = 
+      oldTransaction.type === 'income' ? -oldTransaction.amount : oldTransaction.amount;
+    const newBalanceAdjustment = 
+      updatedTransaction.type === 'income' ? updatedTransaction.amount : -updatedTransaction.amount;
+    
+    setBalance(prev => prev + balanceAdjustment + newBalanceAdjustment);
+    
+    // Update transactions
+    setTransactions(prev => prev.map(t => t.id === id ? updatedTransaction : t));
+    
+    toast({
+      title: "Transaksi berhasil diperbarui",
+      description: `${updatedTransaction.description} sebesar Rp ${updatedTransaction.amount.toLocaleString('id-ID')}`,
+    });
+  };
+
+  const handleDeleteTransaction = (id: string) => {
+    const transaction = transactions.find(t => t.id === id);
+    if (!transaction) return;
+    
+    // Update balance
+    setBalance(prev => 
+      transaction.type === 'income' 
+        ? prev - transaction.amount 
+        : prev + transaction.amount
+    );
+    
+    // Remove transaction
+    setTransactions(prev => prev.filter(t => t.id !== id));
+    
+    toast({
+      title: "Transaksi berhasil dihapus",
+      description: `${transaction.description} sebesar Rp ${transaction.amount.toLocaleString('id-ID')}`,
+      variant: "destructive",
+    });
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header Section */}
-        <div className="text-center mb-8">
+        {/* Header Section with login button */}
+        <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold text-gray-800">Dashboard Keuangan Pribadi</h1>
-          <div className="mt-4">
-            <Card className="p-6 bg-white shadow-lg">
-              <h2 className="text-lg text-gray-600 mb-2">Total Saldo</h2>
-              <p className="text-4xl font-bold text-purple-600">
-                Rp {balance.toLocaleString('id-ID')}
-              </p>
-            </Card>
-          </div>
+          <Button 
+            variant="outline" 
+            className="border-purple-400 text-purple-600 hover:bg-purple-50"
+            onClick={() => navigate('/login')}
+          >
+            Masuk / Daftar
+          </Button>
+        </div>
+
+        <div className="mt-4">
+          <Card className="p-6 bg-white shadow-lg">
+            <h2 className="text-lg text-gray-600 mb-2">Total Saldo</h2>
+            <p className="text-4xl font-bold text-purple-600">
+              Rp {balance.toLocaleString('id-ID')}
+            </p>
+          </Card>
         </div>
 
         {/* Action Buttons */}
@@ -62,7 +121,10 @@ const Index = () => {
             Tambah Pengeluaran
           </Button>
 
-          <Button className="bg-purple-500 hover:bg-purple-600 text-white p-6">
+          <Button 
+            className="bg-purple-500 hover:bg-purple-600 text-white p-6"
+            onClick={() => navigate('/analysis')}
+          >
             <ChartBar className="mr-2" />
             Lihat Analisis
           </Button>
@@ -77,7 +139,11 @@ const Index = () => {
           
           <Card className="p-6">
             <h3 className="text-xl font-semibold mb-4">Riwayat Transaksi</h3>
-            <TransactionHistory transactions={transactions} />
+            <TransactionHistory 
+              transactions={transactions} 
+              onEdit={handleEditTransaction}
+              onDelete={handleDeleteTransaction}
+            />
           </Card>
         </div>
 
