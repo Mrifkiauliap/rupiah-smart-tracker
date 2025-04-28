@@ -1,14 +1,14 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, MinusCircle, ChartBar, UserCircle } from "lucide-react";
+import { PlusCircle, MinusCircle, ChartBar } from "lucide-react";
 import TransactionHistory from '@/components/TransactionHistory';
 import TransactionModal from '@/components/TransactionModal';
 import FinancialChart from '@/components/FinancialChart';
 import { Transaction } from '@/types/transaction';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
+import { UserDropdown } from '@/components/UserDropdown';
 
 const Index = () => {
   const [showModal, setShowModal] = useState(false);
@@ -74,38 +74,29 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white dark:from-gray-900 dark:to-gray-800 dark:text-white p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section with User Info */}
         <div className="flex justify-between items-center">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <UserCircle className="h-8 w-8 text-purple-600" />
-              <h1 className="text-3xl font-bold text-gray-800">Selamat Datang!</h1>
-            </div>
-            <p className="text-gray-600">Kelola keuangan Anda dengan mudah</p>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
+            <p className="text-gray-600 dark:text-gray-300">Kelola keuangan Anda dengan mudah</p>
           </div>
-          <Button 
-            variant="outline" 
-            className="border-purple-400 text-purple-600 hover:bg-purple-50"
-            onClick={() => navigate('/login')}
-          >
-            Masuk / Daftar
-          </Button>
+          <UserDropdown />
         </div>
 
         {/* Balance Card */}
-        <Card className="p-6 bg-white shadow-lg border-purple-100">
-          <h2 className="text-lg text-gray-600 mb-2">Total Saldo</h2>
-          <p className="text-4xl font-bold text-purple-600">
+        <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg border-purple-100 dark:border-gray-700">
+          <h2 className="text-lg text-gray-600 dark:text-gray-300 mb-2">Total Saldo</h2>
+          <p className="text-4xl font-bold text-purple-600 dark:text-purple-400">
             Rp {balance.toLocaleString('id-ID')}
           </p>
         </Card>
 
-        {/* Action Buttons with improved styling */}
+        {/* Action Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Button
-            className="bg-green-500 hover:bg-green-600 text-white p-6 transition-all duration-200 transform hover:scale-[1.02]"
+            className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white p-6"
             onClick={() => {
               setTransactionType('income');
               setShowModal(true);
@@ -116,7 +107,7 @@ const Index = () => {
           </Button>
           
           <Button
-            className="bg-red-500 hover:bg-red-600 text-white p-6 transition-all duration-200 transform hover:scale-[1.02]"
+            className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white p-6"
             onClick={() => {
               setTransactionType('expense');
               setShowModal(true);
@@ -127,7 +118,7 @@ const Index = () => {
           </Button>
 
           <Button 
-            className="bg-purple-500 hover:bg-purple-600 text-white p-6 transition-all duration-200 transform hover:scale-[1.02]"
+            className="bg-purple-500 hover:bg-purple-600 dark:bg-purple-600 dark:hover:bg-purple-700 text-white p-6"
             onClick={() => navigate('/analysis')}
           >
             <ChartBar className="mr-2" />
@@ -135,15 +126,15 @@ const Index = () => {
           </Button>
         </div>
 
-        {/* Charts and History Section with improved layout */}
+        {/* Charts and History Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-          <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Grafik Keuangan</h3>
+          <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-200 dark:bg-gray-800">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Grafik Keuangan</h3>
             <FinancialChart transactions={transactions} />
           </Card>
           
-          <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-200">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Riwayat Transaksi</h3>
+          <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-200 dark:bg-gray-800">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Riwayat Transaksi</h3>
             <TransactionHistory 
               transactions={transactions} 
               onEdit={handleEditTransaction}
