@@ -10,16 +10,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/components/AuthProvider";
 import { Moon, Sun, Settings, LogOut, User } from "lucide-react";
 
 export function UserDropdown() {
   const { setTheme, theme } = useTheme();
-  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
-  const handleLogout = () => {
-    // Here you would handle the logout logic
-    navigate('/login');
+  const handleLogout = async () => {
+    await signOut();
+    // The AuthProvider will handle navigation after signOut
   };
 
   return (
@@ -34,7 +34,7 @@ export function UserDropdown() {
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">Pengguna</p>
             <p className="text-xs leading-none text-muted-foreground">
-              user@example.com
+              {user?.email || 'user@example.com'}
             </p>
           </div>
         </DropdownMenuLabel>

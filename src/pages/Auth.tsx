@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = () => {
   const [loginEmail, setLoginEmail] = useState('');
@@ -17,26 +18,83 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, we would make an API call to validate credentials
-    // For now, just simulate a login
-    toast({
-      title: "Login berhasil",
-      description: "Selamat datang kembali!",
-    });
-    navigate('/');
+    setIsLoading(true);
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Login berhasil",
+        description: "Selamat datang kembali!",
+      });
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast({
+        title: "Login gagal",
+        description: error.message || "Terjadi kesalahan saat login",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real application, we would make an API call to register the user
-    // For now, just simulate a registration
-    toast({
-      title: "Registrasi berhasil",
-      description: "Selamat datang di aplikasi keuangan pribadi!",
-    });
-    navigate('/');
+    setIsLoading(true);
+    
+    try {
+      // 1. Register the user with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: registerEmail,
+        password: registerPassword,
+        options: {
+          data: {
+            name: registerName,
+          },
+        },
+      });
+
+      if (authError) {
+        throw authError;
+      }
+
+      // 2. Create a profile record in the profiles table
+      if (authData.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([{ id: authData.user.id }]);
+
+        if (profileError) {
+          throw profileError;
+        }
+      }
+
+      toast({
+        title: "Registrasi berhasil",
+        description: "Selamat datang di aplikasi keuangan pribadi!",
+      });
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast({
+        title: "Registrasi gagal",
+        description: error.message || "Terjadi kesalahan saat registrasi",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -75,8 +133,12 @@ const Auth = () => {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
-                Masuk
+              <Button 
+                type="submit" 
+                className="w-full bg-purple-600 hover:bg-purple-700"
+                disabled={isLoading}
+              >
+                {isLoading ? "Memproses..." : "Masuk"}
               </Button>
             </form>
           </TabsContent>
@@ -112,8 +174,12 @@ const Auth = () => {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
-                Daftar
+              <Button 
+                type="submit" 
+                className="w-full bg-purple-600 hover:bg-purple-700"
+                disabled={isLoading}
+              >
+                {isLoading ? "Memproses..." : "Daftar"}
               </Button>
             </form>
           </TabsContent>
