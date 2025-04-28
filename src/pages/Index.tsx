@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserDropdown } from '@/components/UserDropdown';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useAuth } from '@/components/AuthProvider';
+import { Transaction } from '@/types/transaction';
 
 const Index = () => {
   const [showModal, setShowModal] = useState(false);
@@ -23,12 +25,14 @@ const Index = () => {
     deleteTransaction 
   } = useTransactions();
 
-  const handleAddTransaction = (transaction: Omit<Transaction, 'id'>) => {
-    addTransaction.mutate({
-      ...transaction,
-      user_id: user?.id
-    });
-    setShowModal(false);
+  const handleAddTransaction = (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => {
+    if (user) {
+      addTransaction.mutate({
+        ...transaction,
+        user_id: user.id
+      });
+      setShowModal(false);
+    }
   };
 
   const balance = transactions.reduce((acc, transaction) => 
@@ -97,8 +101,8 @@ const Index = () => {
             <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Riwayat Transaksi</h3>
             <TransactionHistory 
               transactions={transactions} 
-              onEdit={updateTransaction.mutate}
-              onDelete={deleteTransaction.mutate}
+              onEdit={(transaction) => updateTransaction.mutate(transaction)}
+              onDelete={(id) => deleteTransaction.mutate(id)}
             />
           </Card>
         </div>

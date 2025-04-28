@@ -9,8 +9,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 interface TransactionHistoryProps {
   transactions: Transaction[];
-  onEdit?: (id: string, updatedTransaction: Transaction) => void;
-  onDelete?: (id: string) => void;
+  onEdit: (transaction: Transaction) => void;
+  onDelete: (id: string) => void;
 }
 
 const TransactionHistory = ({ transactions, onEdit, onDelete }: TransactionHistoryProps) => {
@@ -38,14 +38,14 @@ const TransactionHistory = ({ transactions, onEdit, onDelete }: TransactionHisto
   };
 
   const handleSaveEdit = () => {
-    if (editingTransaction && onEdit) {
+    if (editingTransaction) {
       const updatedTransaction = {
         ...editingTransaction,
         amount: Number(editAmount),
         description: editDescription,
         category: editCategory
       };
-      onEdit(editingTransaction.id, updatedTransaction);
+      onEdit(updatedTransaction);
       setShowEditModal(false);
     }
   };
@@ -116,16 +116,14 @@ const TransactionHistory = ({ transactions, onEdit, onDelete }: TransactionHisto
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  {onDelete && (
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50" 
-                      onClick={() => onDelete(transaction.id)}
-                    >
-                      <Trash className="h-4 w-4" />
-                    </Button>
-                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50" 
+                    onClick={() => onDelete(transaction.id)}
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </div>
@@ -161,7 +159,7 @@ const TransactionHistory = ({ transactions, onEdit, onDelete }: TransactionHisto
                     <SelectValue placeholder="Pilih kategori" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories[editingTransaction.type].map((cat) => (
+                    {categories[editingTransaction.type as 'income' | 'expense'].map((cat) => (
                       <SelectItem key={cat} value={cat}>
                         {cat}
                       </SelectItem>

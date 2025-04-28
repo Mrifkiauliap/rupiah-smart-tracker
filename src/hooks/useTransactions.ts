@@ -22,7 +22,7 @@ export function useTransactions() {
   });
 
   const addTransaction = useMutation({
-    mutationFn: async (transaction: Omit<Transaction, 'id'>) => {
+    mutationFn: async (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) => {
       const { data, error } = await supabase
         .from('transactions')
         .insert([transaction])
@@ -49,9 +49,15 @@ export function useTransactions() {
 
   const updateTransaction = useMutation({
     mutationFn: async (transaction: Transaction) => {
+      // Convert Date objects to ISO strings if needed
+      const formattedTransaction = {
+        ...transaction,
+        date: typeof transaction.date === 'object' ? (transaction.date as Date).toISOString() : transaction.date
+      };
+
       const { data, error } = await supabase
         .from('transactions')
-        .update(transaction)
+        .update(formattedTransaction)
         .eq('id', transaction.id)
         .select()
         .single();

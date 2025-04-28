@@ -10,7 +10,7 @@ interface TransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
   type: 'income' | 'expense';
-  onSubmit: (transaction: Transaction) => void;
+  onSubmit: (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => void;
 }
 
 const categories = {
@@ -25,14 +25,15 @@ const TransactionModal = ({ isOpen, onClose, type, onSubmit }: TransactionModalP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const transaction: Transaction = {
-      id: Date.now().toString(),
+    
+    const transaction = {
       type,
       amount: Number(amount),
       description,
       category,
-      date: new Date()
+      date: new Date().toISOString()
     };
+    
     onSubmit(transaction);
     onClose();
     resetForm();
