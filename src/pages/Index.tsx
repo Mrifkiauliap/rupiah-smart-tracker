@@ -5,78 +5,41 @@ import { PlusCircle, MinusCircle, ChartBar } from "lucide-react";
 import TransactionHistory from '@/components/TransactionHistory';
 import TransactionModal from '@/components/TransactionModal';
 import FinancialChart from '@/components/FinancialChart';
-import { Transaction } from '@/types/transaction';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from "@/components/ui/use-toast";
 import { UserDropdown } from '@/components/UserDropdown';
+import { useTransactions } from '@/hooks/useTransactions';
+import { useAuth } from '@/components/AuthProvider';
 
 const Index = () => {
   const [showModal, setShowModal] = useState(false);
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>('income');
-  const [balance, setBalance] = useState(0);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { user } = useAuth();
+  const { 
+    transactions, 
+    isLoading, 
+    addTransaction, 
+    updateTransaction, 
+    deleteTransaction 
+  } = useTransactions();
 
-  const handleAddTransaction = (transaction: Transaction) => {
-    setTransactions(prev => [transaction, ...prev]);
-    setBalance(prev => 
-      transaction.type === 'income' 
-        ? prev + transaction.amount 
-        : prev - transaction.amount
-    );
-    toast({
-      title: "Transaksi berhasil ditambahkan",
-      description: `${transaction.description} sebesar Rp ${transaction.amount.toLocaleString('id-ID')}`,
+  const handleAddTransaction = (transaction: Omit<Transaction, 'id'>) => {
+    addTransaction.mutate({
+      ...transaction,
+      user_id: user?.id
     });
+    setShowModal(false);
   };
 
-  const handleEditTransaction = (id: string, updatedTransaction: Transaction) => {
-    const oldTransaction = transactions.find(t => t.id === id);
-    if (!oldTransaction) return;
-    
-    // Update balance
-    const balanceAdjustment = 
-      oldTransaction.type === 'income' ? -oldTransaction.amount : oldTransaction.amount;
-    const newBalanceAdjustment = 
-      updatedTransaction.type === 'income' ? updatedTransaction.amount : -updatedTransaction.amount;
-    
-    setBalance(prev => prev + balanceAdjustment + newBalanceAdjustment);
-    
-    // Update transactions
-    setTransactions(prev => prev.map(t => t.id === id ? updatedTransaction : t));
-    
-    toast({
-      title: "Transaksi berhasil diperbarui",
-      description: `${updatedTransaction.description} sebesar Rp ${updatedTransaction.amount.toLocaleString('id-ID')}`,
-    });
-  };
-
-  const handleDeleteTransaction = (id: string) => {
-    const transaction = transactions.find(t => t.id === id);
-    if (!transaction) return;
-    
-    // Update balance
-    setBalance(prev => 
-      transaction.type === 'income' 
-        ? prev - transaction.amount 
-        : prev + transaction.amount
-    );
-    
-    // Remove transaction
-    setTransactions(prev => prev.filter(t => t.id !== id));
-    
-    toast({
-      title: "Transaksi berhasil dihapus",
-      description: `${transaction.description} sebesar Rp ${transaction.amount.toLocaleString('id-ID')}`,
-      variant: "destructive",
-    });
-  };
+  const balance = transactions.reduce((acc, transaction) => 
+    transaction.type === 'income' 
+      ? acc + transaction.amount 
+      : acc - transaction.amount
+  , 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white dark:from-gray-900 dark:to-gray-800 dark:text-white p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header Section with User Info */}
         <div className="flex justify-between items-center">
           <div className="space-y-1">
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
@@ -85,7 +48,6 @@ const Index = () => {
           <UserDropdown />
         </div>
 
-        {/* Balance Card */}
         <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg border-purple-100 dark:border-gray-700">
           <h2 className="text-lg text-gray-600 dark:text-gray-300 mb-2">Total Saldo</h2>
           <p className="text-4xl font-bold text-purple-600 dark:text-purple-400">
@@ -93,7 +55,6 @@ const Index = () => {
           </p>
         </Card>
 
-        {/* Action Buttons */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Button
             className="bg-green-500 hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 text-white p-6"
@@ -126,7 +87,6 @@ const Index = () => {
           </Button>
         </div>
 
-        {/* Charts and History Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
           <Card className="p-6 shadow-lg hover:shadow-xl transition-shadow duration-200 dark:bg-gray-800">
             <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Grafik Keuangan</h3>
@@ -137,8 +97,8 @@ const Index = () => {
             <h3 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Riwayat Transaksi</h3>
             <TransactionHistory 
               transactions={transactions} 
-              onEdit={handleEditTransaction}
-              onDelete={handleDeleteTransaction}
+              onEdit={updateTransaction.mutate}
+              onDelete={deleteTransaction.mutate}
             />
           </Card>
         </div>

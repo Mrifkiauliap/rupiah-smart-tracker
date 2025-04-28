@@ -9,7 +9,124 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      financial_metrics: {
+        Row: {
+          cash_equivalents: number | null
+          created_at: string | null
+          debt_payment: number | null
+          id: string
+          investment_assets: number | null
+          monthly_expenses: number | null
+          savings: number | null
+          short_term_debt: number | null
+          total_assets: number | null
+          total_debt: number | null
+          total_income: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cash_equivalents?: number | null
+          created_at?: string | null
+          debt_payment?: number | null
+          id?: string
+          investment_assets?: number | null
+          monthly_expenses?: number | null
+          savings?: number | null
+          short_term_debt?: number | null
+          total_assets?: number | null
+          total_debt?: number | null
+          total_income?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cash_equivalents?: number | null
+          created_at?: string | null
+          debt_payment?: number | null
+          id?: string
+          investment_assets?: number | null
+          monthly_expenses?: number | null
+          savings?: number | null
+          short_term_debt?: number | null
+          total_assets?: number | null
+          total_debt?: number | null
+          total_income?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_metrics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string | null
+          date: string | null
+          description: string
+          id: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          created_at?: string | null
+          date?: string | null
+          description: string
+          id?: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string | null
+          date?: string | null
+          description?: string
+          id?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
