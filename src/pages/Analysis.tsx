@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import FinancialHealthForm from '@/components/analysis/FinancialHealthForm';
 import FinancialMetricsTable from '@/components/analysis/FinancialMetricsTable';
 import Recommendations from '@/components/analysis/Recommendations';
+import InvestmentAnalysisForm from '@/components/analysis/InvestmentAnalysisForm';
 import { calculateFinancialHealth } from '@/utils/financialCalculations';
 
 const Analysis = () => {
@@ -21,6 +21,7 @@ const Analysis = () => {
   const [debtPayment, setDebtPayment] = useState<number>(0);
   const [investmentAssets, setInvestmentAssets] = useState<number>(0);
   const [showResults, setShowResults] = useState(false);
+  const [showInvestmentAnalysis, setShowInvestmentAnalysis] = useState(false);
 
   const financialHealth = calculateFinancialHealth(
     cashEquivalents,
@@ -43,16 +44,16 @@ const Analysis = () => {
   const healthPercentage = (healthyCount / 7) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white p-6">
+    <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center mb-4">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold text-gray-800">Analisis Kesehatan Keuangan</h1>
-            <p className="text-gray-600">Evaluasi kondisi keuangan Anda secara menyeluruh</p>
+            <h1 className="text-3xl font-bold text-foreground">Analisis Kesehatan Keuangan</h1>
+            <p className="text-muted-foreground">Evaluasi kondisi keuangan Anda secara menyeluruh</p>
           </div>
           <Button 
             variant="outline" 
-            className="border-purple-400 text-purple-600 hover:bg-purple-50 flex items-center gap-2"
+            className="border-primary text-primary hover:bg-primary/10 flex items-center gap-2"
             onClick={() => navigate('/')}
           >
             <ArrowLeft className="h-4 w-4" />
@@ -60,7 +61,7 @@ const Analysis = () => {
           </Button>
         </div>
 
-        <Card className="p-6 bg-white shadow-lg">
+        <Card className="p-6 bg-card text-card-foreground">
           <FinancialHealthForm 
             cashEquivalents={cashEquivalents}
             monthlyExpenses={monthlyExpenses}
@@ -85,28 +86,44 @@ const Analysis = () => {
         </Card>
 
         {showResults && (
-          <Card className="p-6 bg-white shadow-lg mt-6">
-            <h2 className="text-xl font-bold mb-4">Hasil Analisis Kesehatan Keuangan</h2>
-            
-            <div className="mb-6">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-lg font-medium">Skor Kesehatan Keuangan:</span>
-                <span className="text-xl font-bold">{healthPercentage.toFixed(0)}%</span>
+          <Card className="p-6 bg-card text-card-foreground">
+            <div className="space-y-6">
+              <h2 className="text-xl font-bold">Hasil Analisis Kesehatan Keuangan</h2>
+              
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-lg font-medium">Skor Kesehatan Keuangan:</span>
+                  <span className="text-xl font-bold">{healthPercentage.toFixed(0)}%</span>
+                </div>
+                <div className="w-full bg-secondary rounded-full h-4">
+                  <div 
+                    className={`h-4 rounded-full ${
+                      healthPercentage > 70 ? 'bg-green-500' : 
+                      healthPercentage > 40 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`} 
+                    style={{ width: `${healthPercentage}%` }}
+                  ></div>
+                </div>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-4">
-                <div 
-                  className={`h-4 rounded-full ${
-                    healthPercentage > 70 ? 'bg-green-500' : 
-                    healthPercentage > 40 ? 'bg-yellow-500' : 'bg-red-500'
-                  }`} 
-                  style={{ width: `${healthPercentage}%` }}
-                ></div>
-              </div>
+              
+              <FinancialMetricsTable financialHealth={financialHealth} />
+              <Recommendations financialHealth={financialHealth} />
+
+              {!showInvestmentAnalysis && (
+                <Button
+                  onClick={() => setShowInvestmentAnalysis(true)}
+                  variant="outline"
+                  className="w-full mt-4"
+                >
+                  Tambahkan Analisis Investasi
+                </Button>
+              )}
             </div>
-            
-            <FinancialMetricsTable financialHealth={financialHealth} />
-            <Recommendations financialHealth={financialHealth} />
           </Card>
+        )}
+
+        {showInvestmentAnalysis && (
+          <InvestmentAnalysisForm onClose={() => setShowInvestmentAnalysis(false)} />
         )}
       </div>
     </div>
@@ -114,4 +131,3 @@ const Analysis = () => {
 };
 
 export default Analysis;
-
