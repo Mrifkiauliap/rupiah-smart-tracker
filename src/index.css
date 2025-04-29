@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -57,4 +58,89 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-thumb-gray-400 {
+    scrollbar-color: #a0aec0 transparent;
+  }
+  
+  .dark .scrollbar-thumb-gray-600 {
+    scrollbar-color: #4a5568 transparent;
+  }
+}
+
+/* Custom styles for dropdowns in dark mode */
+.dark .rdp-dropdown {
+  background-color: #374151;
+  color: white;
+}
+
+.dark .rdp-button:hover:not([disabled]) {
+  background-color: #4B5563;
+}
+
+.dark .rdp-day_selected, 
+.dark .rdp-day_selected:focus-visible, 
+.dark .rdp-day_selected:hover {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* Fix for calendar popup in dark mode */
+.dark .react-datepicker {
+  background-color: #1F2937;
+  color: white;
+  border-color: #374151;
+}
+
+.dark .react-datepicker__header {
+  background-color: #111827;
+  border-color: #374151;
+}
+
+.dark .react-datepicker__day-name, 
+.dark .react-datepicker__current-month {
+  color: white;
+}
+
+.dark .react-datepicker__day {
+  color: #D1D5DB;
+}
+
+.dark .react-datepicker__day:hover {
+  background-color: #4B5563;
+}
+
+.dark .react-datepicker__day--selected {
+  background-color: var(--primary);
+}
+
+/* Improve analytics form in dark mode */
+.dark .form-container {
+  background-color: #1F2937;
+  border-color: #374151;
+}
+
+.dark .analysis-card {
+  background-color: #1F2937;
+  border-color: #374151;
+}
+
+.dark .recharts-tooltip-cursor {
+  fill: rgba(17, 24, 39, 0.8);
+}
+
+.dark .recharts-default-tooltip {
+  background-color: #1F2937 !important;
+  border-color: #374151 !important;
+}
+
+/* Chart improvements */
+.recharts-cartesian-axis-tick-value {
+  fill: currentColor;
 }

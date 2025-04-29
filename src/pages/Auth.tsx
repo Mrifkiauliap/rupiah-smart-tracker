@@ -98,11 +98,11 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white p-6 flex items-center justify-center">
-      <Card className="w-full max-w-md p-6 bg-white shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white dark:from-gray-900 dark:to-gray-800 p-6 flex items-center justify-center">
+      <Card className="w-full max-w-md p-6 bg-white dark:bg-gray-800 shadow-lg border-purple-100 dark:border-gray-700">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Aplikasi Keuangan Pribadi</h1>
-          <p className="text-gray-600">Kelola keuangan pribadi Anda dengan mudah</p>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Aplikasi Keuangan Pribadi</h1>
+          <p className="text-gray-600 dark:text-gray-300">Kelola keuangan pribadi Anda dengan mudah</p>
         </div>
         
         <Tabs defaultValue="login" className="w-full">
@@ -114,23 +114,25 @@ const Auth = () => {
           <TabsContent value="login">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
+                <label className="text-sm font-medium dark:text-gray-200">Email</label>
                 <Input 
                   type="email" 
                   placeholder="Email anda" 
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   required
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Kata Sandi</label>
+                <label className="text-sm font-medium dark:text-gray-200">Kata Sandi</label>
                 <Input 
                   type="password" 
                   placeholder="Kata sandi anda" 
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   required
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 />
               </div>
               <Button 
@@ -146,32 +148,35 @@ const Auth = () => {
           <TabsContent value="register">
             <form onSubmit={handleRegister} className="space-y-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Nama</label>
+                <label className="text-sm font-medium dark:text-gray-200">Nama</label>
                 <Input 
                   placeholder="Nama lengkap" 
                   value={registerName}
                   onChange={(e) => setRegisterName(e.target.value)}
                   required
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
+                <label className="text-sm font-medium dark:text-gray-200">Email</label>
                 <Input 
                   type="email" 
                   placeholder="Email anda" 
                   value={registerEmail}
                   onChange={(e) => setRegisterEmail(e.target.value)}
                   required
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Kata Sandi</label>
+                <label className="text-sm font-medium dark:text-gray-200">Kata Sandi</label>
                 <Input 
                   type="password" 
                   placeholder="Kata sandi anda" 
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
                   required
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600"
                 />
               </div>
               <Button 
@@ -184,16 +189,6 @@ const Auth = () => {
             </form>
           </TabsContent>
         </Tabs>
-        
-        <div className="mt-6 text-center">
-          <Button 
-            variant="ghost" 
-            className="text-purple-600 hover:bg-purple-50"
-            onClick={() => navigate('/')}
-          >
-            Kembali ke Dashboard
-          </Button>
-        </div>
       </Card>
     </div>
   );
