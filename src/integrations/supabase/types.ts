@@ -69,16 +69,19 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          name: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           id: string
+          name?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
+          name?: string | null
           updated_at?: string | null
         }
         Relationships: []

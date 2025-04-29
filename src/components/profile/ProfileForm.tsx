@@ -46,8 +46,8 @@ export function ProfileForm() {
         if (error) throw error;
         
         // Set the form values
-        if (data) {
-          form.setValue('name', data.name || '');
+        if (data && data.name) {
+          form.setValue('name', data.name);
         }
         
         // Email is from auth.users, not profiles
