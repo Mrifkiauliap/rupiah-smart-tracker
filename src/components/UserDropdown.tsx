@@ -12,6 +12,7 @@ import {
 import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/components/AuthProvider";
 import { Moon, Sun, Settings, LogOut, User } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function UserDropdown() {
   const { setTheme, theme } = useTheme();
@@ -40,14 +41,18 @@ export function UserDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
-            <span>Profil</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Pengaturan</span>
-          </DropdownMenuItem>
+          <Link to="/profile">
+            <DropdownMenuItem>
+              <User className="mr-2 h-4 w-4" />
+              <span>Profil</span>
+            </DropdownMenuItem>
+          </Link>
+          <Link to="/profile?tab=settings">
+            <DropdownMenuItem>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Pengaturan</span>
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
