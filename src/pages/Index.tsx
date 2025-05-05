@@ -11,12 +11,22 @@ import { UserDropdown } from '@/components/UserDropdown';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useAuth } from '@/components/AuthProvider';
 import { Transaction } from '@/types/transaction';
+import { useUserSettings } from '@/hooks/useUserSettings';
+
+const formatCurrency = (amount: number, currency: string, locale: string) => {
+  return new Intl.NumberFormat(locale, { 
+    style: 'currency', 
+    currency: currency,
+    maximumFractionDigits: 0
+  }).format(amount);
+};
 
 const Index = () => {
   const [showModal, setShowModal] = useState(false);
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>('income');
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { settings } = useUserSettings();
   const { 
     transactions, 
     isLoading, 
@@ -55,7 +65,7 @@ const Index = () => {
         <Card className="p-6 bg-white dark:bg-gray-800 shadow-lg border-purple-100 dark:border-gray-700">
           <h2 className="text-lg text-gray-600 dark:text-gray-300 mb-2">Total Saldo</h2>
           <p className="text-4xl font-bold text-purple-600 dark:text-purple-400">
-            Rp {balance.toLocaleString('id-ID')}
+            {formatCurrency(balance, settings.currency, settings.number_format)}
           </p>
         </Card>
 
@@ -103,6 +113,7 @@ const Index = () => {
               transactions={transactions} 
               onEdit={(transaction) => updateTransaction.mutate(transaction)}
               onDelete={(id) => deleteTransaction.mutate(id)}
+              formatCurrency={(amount) => formatCurrency(amount, settings.currency, settings.number_format)}
             />
           </Card>
         </div>

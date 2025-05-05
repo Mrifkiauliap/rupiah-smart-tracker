@@ -9,12 +9,14 @@ import { ProfileForm } from '@/components/profile/ProfileForm';
 import { PasswordForm } from '@/components/profile/PasswordForm';
 import { AccountSettings } from '@/components/profile/AccountSettings';
 import { ArrowLeft } from 'lucide-react';
+import { useUserSettings } from '@/hooks/useUserSettings';
 
 const Profile = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
+  const { settings } = useUserSettings();
 
   useEffect(() => {
     // Get the tab from URL query param

@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTheme } from '@/components/theme-provider';
 
 type AuthContextType = {
   user: User | null;
@@ -26,6 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     // Set up auth state listener first
@@ -40,6 +42,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (location.pathname === '/login') {
             navigate('/dashboard');
           }
+          
+          // Fetch user settings and apply theme when signing in
+          if (session?.user) {
+            setTimeout(async () => {
+              const { data } = await supabase
+                .from('user_settings')
+                .select('theme')
+                .eq('user_id', session.user.id)
+                .single();
+                
+              if (data && data.theme) {
+                setTheme(data.theme);
+              }
+            }, 0);
+          }
         } else if (event === 'SIGNED_OUT') {
           navigate('/login');
         }
@@ -51,6 +68,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
+      // Fetch user settings and apply theme for existing session
+      if (session?.user) {
+        setTimeout(async () => {
+          const { data } = await supabase
+            .from('user_settings')
+            .select('theme')
+            .eq('user_id', session.user.id)
+            .single();
+            
+          if (data && data.theme) {
+            setTheme(data.theme);
+          }
+        }, 0);
+      }
+      
       // Only redirect to login if not already there and no session
       if (!session && location.pathname !== '/login') {
         navigate('/login');
@@ -61,7 +93,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, location.pathname]);
+  }, [navigate, location.pathname, setTheme]);
 
   const signOut = async () => {
     await supabase.auth.signOut();

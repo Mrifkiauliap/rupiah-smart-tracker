@@ -12,6 +12,7 @@ import { Loader2, Trash2, Sun, Moon } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { useUserSettings } from '@/hooks/useUserSettings';
 
 const currencies = [
   { value: 'USD', label: 'USD - US Dollar ($)' },
@@ -26,7 +27,16 @@ export function AccountSettings() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const { settings, isLoading, updateSettings } = useUserSettings();
+
+  const handleThemeChange = async (newTheme: 'dark' | 'light') => {
+    setTheme(newTheme);
+    await updateSettings({ theme: newTheme });
+  };
+
+  const handleCurrencyChange = async (newCurrency: string) => {
+    await updateSettings({ currency: newCurrency });
+  };
 
   const handleDeleteAccount = async () => {
     if (!user) return;
@@ -49,6 +59,14 @@ export function AccountSettings() {
         .eq('user_id', user.id);
         
       if (transactionsError) throw transactionsError;
+      
+      // Delete user settings
+      const { error: settingsError } = await supabase
+        .from('user_settings')
+        .delete()
+        .eq('user_id', user.id);
+        
+      if (settingsError) throw settingsError;
       
       // Delete profile
       const { error: profileError } = await supabase
@@ -78,6 +96,14 @@ export function AccountSettings() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -106,7 +132,7 @@ export function AccountSettings() {
             </div>
             <Button
               variant="outline"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              onClick={() => handleThemeChange(theme === 'dark' ? 'light' : 'dark')}
             >
               {theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
             </Button>
@@ -132,8 +158,8 @@ export function AccountSettings() {
         </CardHeader>
         <CardContent>
           <RadioGroup
-            value={selectedCurrency}
-            onValueChange={setSelectedCurrency}
+            value={settings.currency}
+            onValueChange={handleCurrencyChange}
             className="space-y-3"
           >
             {currencies.map((currency) => (
@@ -144,18 +170,6 @@ export function AccountSettings() {
             ))}
           </RadioGroup>
         </CardContent>
-        <CardFooter>
-          <Button 
-            onClick={() => {
-              toast({
-                title: "Mata uang diperbarui",
-                description: `Mata uang diubah ke ${selectedCurrency}`,
-              });
-            }}
-          >
-            Simpan Preferensi
-          </Button>
-        </CardFooter>
       </Card>
       
       <Separator />
