@@ -1,6 +1,6 @@
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,8 +12,24 @@ import { ArrowLeft } from 'lucide-react';
 
 const Profile = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
+
+  useEffect(() => {
+    // Get the tab from URL query param
+    const query = new URLSearchParams(location.search);
+    const tab = query.get('tab');
+    
+    if (tab && ['profile', 'password', 'settings'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    navigate(`/profile?tab=${value}`, { replace: true });
+  };
 
   if (!user) {
     return null;
@@ -41,7 +57,7 @@ const Profile = () => {
       </div>
       
       <Card>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <CardHeader>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="profile">Profil</TabsTrigger>

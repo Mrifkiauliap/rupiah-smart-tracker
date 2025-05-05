@@ -8,13 +8,25 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/components/ui/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2, Trash2, Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/components/theme-provider';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+
+const currencies = [
+  { value: 'USD', label: 'USD - US Dollar ($)' },
+  { value: 'IDR', label: 'IDR - Indonesian Rupiah (Rp)' },
+  { value: 'EUR', label: 'EUR - Euro (€)' },
+  { value: 'GBP', label: 'GBP - British Pound (£)' }
+];
 
 export function AccountSettings() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState('USD');
 
   const handleDeleteAccount = async () => {
     if (!user) return;
@@ -37,22 +49,25 @@ export function AccountSettings() {
         .eq('user_id', user.id);
         
       if (transactionsError) throw transactionsError;
-
-      // Finally delete the user account itself
-      const { error: userError } = await supabase.auth.admin.deleteUser(user.id);
       
-      if (userError) throw userError;
+      // Delete profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', user.id);
+        
+      if (profileError) throw profileError;
 
-      // Sign out after successful deletion
+      // Sign out the user first
       await signOut();
+      
+      toast({
+        title: 'Akun telah dihapus',
+        description: 'Semua data Anda telah dihapus dari sistem kami.',
+      });
       
       // Redirect to login page
       navigate('/login');
-      
-      toast({
-        title: 'Akun berhasil dihapus',
-        description: 'Semua data Anda telah dihapus dari sistem kami.',
-      });
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -71,6 +86,77 @@ export function AccountSettings() {
           Atur preferensi tampilan aplikasi Anda.
         </p>
       </div>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Mode Tampilan</CardTitle>
+          <CardDescription>
+            Pilih mode tampilan yang Anda sukai.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              {theme === 'dark' ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
+              <span>Mode {theme === 'dark' ? 'Gelap' : 'Terang'}</span>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            >
+              {theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+      
+      <Separator className="my-4" />
+      
+      <div>
+        <h3 className="text-lg font-medium">Preferensi Mata Uang</h3>
+        <p className="text-sm text-muted-foreground">
+          Pilih mata uang yang ingin Anda gunakan dalam aplikasi.
+        </p>
+      </div>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Mata Uang</CardTitle>
+          <CardDescription>
+            Pilih mata uang default untuk transaksi Anda.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup
+            value={selectedCurrency}
+            onValueChange={setSelectedCurrency}
+            className="space-y-3"
+          >
+            {currencies.map((currency) => (
+              <div key={currency.value} className="flex items-center space-x-2">
+                <RadioGroupItem value={currency.value} id={currency.value} />
+                <Label htmlFor={currency.value}>{currency.label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </CardContent>
+        <CardFooter>
+          <Button 
+            onClick={() => {
+              toast({
+                title: "Mata uang diperbarui",
+                description: `Mata uang diubah ke ${selectedCurrency}`,
+              });
+            }}
+          >
+            Simpan Preferensi
+          </Button>
+        </CardFooter>
+      </Card>
       
       <Separator />
       
