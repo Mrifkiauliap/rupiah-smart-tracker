@@ -51,6 +51,11 @@ const Index = () => {
       : acc - transaction.amount
   , 0);
 
+  // Function to format currency for TransactionHistory
+  const formatTransactionCurrency = (amount: number) => {
+    return formatCurrency(amount, settings.currency, settings.number_format);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white dark:from-gray-900 dark:to-gray-800 dark:text-white p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -113,7 +118,7 @@ const Index = () => {
               transactions={transactions} 
               onEdit={(transaction) => updateTransaction.mutate(transaction)}
               onDelete={(id) => deleteTransaction.mutate(id)}
-              formatCurrency={(amount) => formatCurrency(amount, settings.currency, settings.number_format)}
+              formatCurrency={formatTransactionCurrency}
             />
           </Card>
         </div>

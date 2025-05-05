@@ -53,7 +53,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 .single();
                 
               if (data && data.theme) {
-                setTheme(data.theme);
+                // Convert string to 'dark' | 'light' | 'system' type
+                const themeValue = data.theme === 'dark' || data.theme === 'light' ? data.theme : 'system';
+                setTheme(themeValue);
               }
             }, 0);
           }
@@ -78,7 +80,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             .single();
             
           if (data && data.theme) {
-            setTheme(data.theme);
+            // Convert string to 'dark' | 'light' | 'system' type
+            const themeValue = data.theme === 'dark' || data.theme === 'light' ? data.theme : 'system';
+            setTheme(themeValue);
           }
         }, 0);
       }

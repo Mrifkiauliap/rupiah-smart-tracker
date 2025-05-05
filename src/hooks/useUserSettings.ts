@@ -48,6 +48,29 @@ export function useUserSettings() {
             theme: data.theme,
             number_format: data.number_format,
           });
+        } else {
+          // If no settings found, create default settings
+          const { data: newSettings, error: insertError } = await supabase
+            .from('user_settings')
+            .insert({
+              user_id: user.id,
+              currency: 'USD',
+              theme: 'light',
+              number_format: 'id-ID',
+            })
+            .select()
+            .single();
+
+          if (insertError) {
+            console.error('Error creating user settings:', insertError.message);
+          } else if (newSettings) {
+            setSettings({
+              id: newSettings.id,
+              currency: newSettings.currency,
+              theme: newSettings.theme,
+              number_format: newSettings.number_format,
+            });
+          }
         }
       } catch (error: any) {
         console.error('Error fetching user settings:', error.message);
@@ -69,6 +92,7 @@ export function useUserSettings() {
       const { error } = await supabase
         .from('user_settings')
         .upsert({
+          id: settings.id, // Include ID to ensure we update, not insert
           user_id: user.id,
           currency: updatedSettings.currency,
           theme: updatedSettings.theme,
