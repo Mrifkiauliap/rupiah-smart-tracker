@@ -16,9 +16,10 @@ interface TransactionHistoryProps {
   transactions: Transaction[];
   onEdit: (transaction: Transaction) => void;
   onDelete: (id: string) => void;
+  formatCurrency?: (amount: number) => string;
 }
 
-const TransactionHistory = ({ transactions, onEdit, onDelete }: TransactionHistoryProps) => {
+const TransactionHistory = ({ transactions, onEdit, onDelete, formatCurrency }: TransactionHistoryProps) => {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -71,6 +72,13 @@ const TransactionHistory = ({ transactions, onEdit, onDelete }: TransactionHisto
     }
   };
 
+  const formatAmount = (amount: number) => {
+    if (formatCurrency) {
+      return formatCurrency(amount);
+    }
+    return `Rp ${amount.toLocaleString('id-ID')}`;
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex gap-4 mb-4">
@@ -121,7 +129,7 @@ const TransactionHistory = ({ transactions, onEdit, onDelete }: TransactionHisto
                 <div className={`font-semibold ${
                   transaction.type === 'income' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                 }`}>
-                  Rp {transaction.amount.toLocaleString('id-ID')}
+                  {formatAmount(transaction.amount)}
                 </div>
                 <div className="flex gap-1">
                   <Button 
