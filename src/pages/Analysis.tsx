@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, TrendingUp, ArrowDownUp } from "lucide-react";
+import { ArrowLeft, TrendingUp, ArrowDownUp, CheckCircle2, AlertTriangle } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import FinancialHealthForm from '@/components/analysis/FinancialHealthForm';
 import FinancialMetricsTable from '@/components/analysis/FinancialMetricsTable';
