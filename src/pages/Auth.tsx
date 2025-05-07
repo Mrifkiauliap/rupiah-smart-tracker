@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -70,16 +69,9 @@ const Auth = () => {
         throw authError;
       }
 
-      // 2. Create a profile record in the profiles table
-      if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([{ id: authData.user.id }]);
-
-        if (profileError) {
-          throw profileError;
-        }
-      }
+      // 2. No need to explicitly create a profile record here
+      // The database trigger will handle this automatically
+      // This will avoid the RLS policy violation
 
       toast({
         title: "Registrasi berhasil",
