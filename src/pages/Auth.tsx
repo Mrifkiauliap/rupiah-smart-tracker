@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -69,9 +70,19 @@ const Auth = () => {
         throw authError;
       }
 
-      // 2. No need to explicitly create a profile record here
-      // The database trigger will handle this automatically
-      // This will avoid the RLS policy violation
+      // 2. Update the profile name explicitly to ensure it's set correctly
+      if (authData.user) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ name: registerName })
+          .eq('id', authData.user.id);
+          
+        if (updateError) {
+          console.error("Error updating profile name:", updateError);
+          // Continue with registration even if profile update fails
+          // The user can update their name later
+        }
+      }
 
       toast({
         title: "Registrasi berhasil",

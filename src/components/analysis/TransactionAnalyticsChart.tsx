@@ -53,13 +53,18 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
 
   return (
     <div className="space-y-6">
-      {/* Financial Health Overview Card */}
-      <Card className="col-span-1 md:col-span-2">
-        <CardHeader>
-          <CardTitle>Kesehatan Keuangan</CardTitle>
-          <CardDescription>Visualisasi metrik kesehatan keuangan berdasarkan transaksi</CardDescription>
+      {/* Financial Health Overview Card - Improved UI */}
+      <Card className="col-span-1 md:col-span-2 overflow-hidden border-l-4 border-l-purple-500">
+        <CardHeader className="bg-muted/50">
+          <CardTitle className="flex items-center text-lg md:text-xl">
+            <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 p-1.5 rounded-full mr-2">
+              <CheckCircle2 className="h-5 w-5" />
+            </span>
+            Kesehatan Keuangan
+          </CardTitle>
+          <CardDescription>Analisis menyeluruh berdasarkan data transaksi Anda</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="col-span-1 lg:col-span-2">
               <div className="h-[380px]">
@@ -89,7 +94,11 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
             <div className="space-y-6">
               <div className="space-y-4">
                 {Object.entries(analytics.financialMetrics).map(([key, metric]) => (
-                  <div key={key} className="p-4 bg-card rounded-lg border border-border">
+                  <div key={key} className={`p-4 rounded-lg border transition-all ${
+                    metric.isHealthy 
+                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                      : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                  }`}>
                     <div className="flex justify-between items-center mb-2">
                       <span className="font-medium">{
                         key === 'liquidity' ? 'Likuiditas' :
@@ -98,14 +107,14 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
                         'Rasio Pengeluaran'
                       }</span>
                       {metric.isHealthy ? (
-                        <Badge className="bg-green-500">Sehat</Badge>
+                        <Badge className="bg-green-500 hover:bg-green-600">Sehat</Badge>
                       ) : (
                         <Badge variant="destructive">Perhatikan</Badge>
                       )}
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">{metric.formula}</span>
-                      <span className="font-semibold">
+                      <span className="text-sm text-muted-foreground">{metric.description}</span>
+                      <span className={`font-semibold ${metric.isHealthy ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
                         {key === 'liquidity' ? metric.value.toFixed(2) + 'x' : metric.value.toFixed(2) + '%'}
                       </span>
                     </div>
@@ -117,10 +126,15 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
         </CardContent>
       </Card>
 
-      {/* Monthly Cash Flow Chart */}
-      <Card className="col-span-1 md:col-span-2">
-        <CardHeader>
-          <CardTitle>Arus Kas Bulanan</CardTitle>
+      {/* Monthly Cash Flow Chart - Improved UI */}
+      <Card className="col-span-1 md:col-span-2 overflow-hidden border-l-4 border-l-blue-500">
+        <CardHeader className="bg-muted/50">
+          <CardTitle className="flex items-center text-lg md:text-xl">
+            <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 p-1.5 rounded-full mr-2">
+              <TrendingUp className="h-5 w-5" />
+            </span>
+            Arus Kas Bulanan
+          </CardTitle>
           <CardDescription>Pemasukan dan pengeluaran selama 6 bulan terakhir</CardDescription>
         </CardHeader>
         <CardContent>
@@ -186,36 +200,41 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Summary Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Ringkasan Keuangan</CardTitle>
+        {/* Summary Card - Improved UI */}
+        <Card className="overflow-hidden border-l-4 border-l-green-500">
+          <CardHeader className="bg-muted/50">
+            <CardTitle className="flex items-center text-lg md:text-xl">
+              <span className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 p-1.5 rounded-full mr-2">
+                <ArrowDownUp className="h-5 w-5" />
+              </span>
+              Ringkasan Keuangan
+            </CardTitle>
             <CardDescription>Periode 6 bulan terakhir</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-6">
             <div className="grid grid-cols-1 gap-4">
-              <div className="flex justify-between items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                 <span className="text-muted-foreground">Total Pemasukan:</span>
                 <span className="font-bold text-green-600 dark:text-green-400">
                   {formatCurrency(analytics.totalIncome)}
                 </span>
               </div>
               
-              <div className="flex justify-between items-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
                 <span className="text-muted-foreground">Total Pengeluaran:</span>
                 <span className="font-bold text-red-600 dark:text-red-400">
                   {formatCurrency(analytics.totalExpense)}
                 </span>
               </div>
               
-              <div className="flex justify-between items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                 <span className="text-muted-foreground">Saldo Bersih:</span>
                 <span className={`font-bold ${analytics.netBalance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {formatCurrency(analytics.netBalance)}
                 </span>
               </div>
 
-              <div className="flex justify-between items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <div className="flex justify-between items-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
                 <span className="text-muted-foreground">Rasio Tabungan:</span>
                 <span className={`font-bold ${analytics.savingsRatio >= 20 ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
                   {analytics.savingsRatio.toFixed(1)}%
@@ -225,13 +244,18 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
           </CardContent>
         </Card>
 
-        {/* Expense Breakdown Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Pengeluaran per Kategori</CardTitle>
+        {/* Expense Breakdown Card - Improved UI */}
+        <Card className="overflow-hidden border-l-4 border-l-amber-500">
+          <CardHeader className="bg-muted/50">
+            <CardTitle className="flex items-center text-lg md:text-xl">
+              <span className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 p-1.5 rounded-full mr-2">
+                <PieChart className="h-5 w-5" />
+              </span>
+              Pengeluaran per Kategori
+            </CardTitle>
             <CardDescription>Distribusi pengeluaran berdasarkan kategori</CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col items-center">
+          <CardContent className="flex flex-col items-center pt-6">
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -261,7 +285,7 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
 
             <div className="w-full mt-4 space-y-2 max-h-[150px] overflow-y-auto">
               {categoryData.map((category, index) => (
-                <div key={index} className="flex items-center justify-between">
+                <div key={index} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md">
                   <div className="flex items-center">
                     <div 
                       className="w-3 h-3 rounded-full mr-2" 

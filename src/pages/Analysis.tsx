@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, TrendingUp, ArrowDownUp, CheckCircle2, AlertTriangle } from "lucide-react";
+import { ArrowLeft, TrendingUp, ArrowDownUp, CheckCircle2, AlertTriangle, PieChart } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import FinancialHealthForm from '@/components/analysis/FinancialHealthForm';
 import FinancialMetricsTable from '@/components/analysis/FinancialMetricsTable';
@@ -103,7 +102,7 @@ const Analysis = () => {
 
         {/* This banner shows transaction-based metrics without requiring manual input */}
         {transactions.length > 0 && (
-          <Card className="p-6 bg-card text-card-foreground mb-6">
+          <Card className="p-6 bg-card text-card-foreground mb-6 overflow-hidden border-l-4 border-l-purple-500">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Berdasarkan Data Transaksi Anda</h2>
@@ -113,7 +112,7 @@ const Analysis = () => {
               </div>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="p-4 bg-card rounded-lg border border-border">
+                <div className="p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <div className="text-sm text-muted-foreground">Likuiditas</div>
                   <div className="flex items-center justify-between mt-1">
                     <div className="text-xl font-semibold">{analytics.financialMetrics.liquidity.value.toFixed(1)}x</div>
@@ -125,7 +124,7 @@ const Analysis = () => {
                   </div>
                 </div>
                 
-                <div className="p-4 bg-card rounded-lg border border-border">
+                <div className="p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <div className="text-sm text-muted-foreground">Tingkat Tabungan</div>
                   <div className="flex items-center justify-between mt-1">
                     <div className="text-xl font-semibold">{analytics.financialMetrics.savingsRate.value.toFixed(1)}%</div>
@@ -137,7 +136,7 @@ const Analysis = () => {
                   </div>
                 </div>
                 
-                <div className="p-4 bg-card rounded-lg border border-border">
+                <div className="p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <div className="text-sm text-muted-foreground">Utang/Pendapatan</div>
                   <div className="flex items-center justify-between mt-1">
                     <div className="text-xl font-semibold">{analytics.financialMetrics.debtToIncome.value.toFixed(1)}%</div>
@@ -149,7 +148,7 @@ const Analysis = () => {
                   </div>
                 </div>
                 
-                <div className="p-4 bg-card rounded-lg border border-border">
+                <div className="p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <div className="text-sm text-muted-foreground">Rasio Pengeluaran</div>
                   <div className="flex items-center justify-between mt-1">
                     <div className="text-xl font-semibold">{analytics.financialMetrics.expenseRatio.value.toFixed(1)}%</div>
