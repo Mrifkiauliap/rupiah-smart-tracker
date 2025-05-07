@@ -9,61 +9,53 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      financial_metrics: {
+      financial_data: {
         Row: {
-          cash_equivalents: number | null
+          cash_equivalents: number
           created_at: string | null
-          debt_payment: number | null
+          debt_payment: number
           id: string
-          investment_assets: number | null
-          monthly_expenses: number | null
-          savings: number | null
-          short_term_debt: number | null
-          total_assets: number | null
-          total_debt: number | null
-          total_income: number | null
+          investment_assets: number
+          monthly_expenses: number
+          savings: number
+          short_term_debt: number
+          total_assets: number
+          total_debt: number
+          total_income: number
           updated_at: string | null
           user_id: string
         }
         Insert: {
-          cash_equivalents?: number | null
+          cash_equivalents?: number
           created_at?: string | null
-          debt_payment?: number | null
+          debt_payment?: number
           id?: string
-          investment_assets?: number | null
-          monthly_expenses?: number | null
-          savings?: number | null
-          short_term_debt?: number | null
-          total_assets?: number | null
-          total_debt?: number | null
-          total_income?: number | null
+          investment_assets?: number
+          monthly_expenses?: number
+          savings?: number
+          short_term_debt?: number
+          total_assets?: number
+          total_debt?: number
+          total_income?: number
           updated_at?: string | null
           user_id: string
         }
         Update: {
-          cash_equivalents?: number | null
+          cash_equivalents?: number
           created_at?: string | null
-          debt_payment?: number | null
+          debt_payment?: number
           id?: string
-          investment_assets?: number | null
-          monthly_expenses?: number | null
-          savings?: number | null
-          short_term_debt?: number | null
-          total_assets?: number | null
-          total_debt?: number | null
-          total_income?: number | null
+          investment_assets?: number
+          monthly_expenses?: number
+          savings?: number
+          short_term_debt?: number
+          total_assets?: number
+          total_debt?: number
+          total_income?: number
           updated_at?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "financial_metrics_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {

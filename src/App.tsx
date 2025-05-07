@@ -10,6 +10,7 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Analysis from "./pages/Analysis";
 import Profile from "./pages/Profile";
+import FinancialData from "./pages/FinancialData";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
               <Route path="/dashboard" element={<Index />} />
               <Route path="/login" element={<Auth />} />
               <Route path="/analysis" element={<Analysis />} />
+              <Route path="/financial-data" element={<FinancialData />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

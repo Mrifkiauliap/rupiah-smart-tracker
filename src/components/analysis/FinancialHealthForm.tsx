@@ -1,7 +1,56 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useFinancialData } from '@/hooks/useFinancialData';
+import { useForm } from 'react-hook-form';
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel,
+  FormDescription,
+  FormMessage 
+} from "@/components/ui/form";
+import { useToast } from '@/components/ui/use-toast';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Loader2 } from "lucide-react";
+import { useAuth } from '@/components/AuthProvider';
+
+// Define form validation schema
+const formSchema = z.object({
+  cashEquivalents: z.number().nonnegative({
+    message: "Nilai tidak boleh negatif"
+  }),
+  monthlyExpenses: z.number().nonnegative({
+    message: "Nilai tidak boleh negatif"
+  }),
+  shortTermDebt: z.number().nonnegative({
+    message: "Nilai tidak boleh negatif"
+  }),
+  savings: z.number().nonnegative({
+    message: "Nilai tidak boleh negatif"
+  }),
+  totalIncome: z.number().nonnegative({
+    message: "Nilai tidak boleh negatif"
+  }),
+  totalDebt: z.number().nonnegative({
+    message: "Nilai tidak boleh negatif"
+  }),
+  totalAssets: z.number().nonnegative({
+    message: "Nilai tidak boleh negatif"
+  }),
+  debtPayment: z.number().nonnegative({
+    message: "Nilai tidak boleh negatif"
+  }),
+  investmentAssets: z.number().nonnegative({
+    message: "Nilai tidak boleh negatif"
+  }),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 interface FinancialHealthFormProps {
   cashEquivalents: number;
@@ -148,4 +197,3 @@ const FinancialHealthForm = ({
 };
 
 export default FinancialHealthForm;
-

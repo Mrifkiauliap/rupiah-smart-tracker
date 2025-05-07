@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, TrendingUp, ArrowDownUp, CheckCircle2, AlertTriangle, PieChart } from "lucide-react";
+import { ArrowLeft, TrendingUp, ArrowDownUp, CheckCircle2, AlertTriangle, PieChart, Database } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import FinancialHealthForm from '@/components/analysis/FinancialHealthForm';
 import FinancialMetricsTable from '@/components/analysis/FinancialMetricsTable';
@@ -14,12 +15,16 @@ import { useTransactionAnalytics } from '@/hooks/useTransactionAnalytics';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TransactionAnalyticsChart from '@/components/analysis/TransactionAnalyticsChart';
 import { Badge } from "@/components/ui/badge";
+import { useFinancialData } from '@/hooks/useFinancialData';
+import { useToast } from '@/components/ui/use-toast';
 
 const Analysis = () => {
   const navigate = useNavigate();
   const { transactions } = useTransactions();
   const { settings } = useUserSettings();
   const analytics = useTransactionAnalytics(transactions);
+  const { financialData, saveFinancialData } = useFinancialData();
+  const { toast } = useToast();
   
   const [cashEquivalents, setCashEquivalents] = useState<number>(0);
   const [monthlyExpenses, setMonthlyExpenses] = useState<number>(0);
@@ -33,15 +38,30 @@ const Analysis = () => {
   const [showResults, setShowResults] = useState(false);
   const [showInvestmentAnalysis, setShowInvestmentAnalysis] = useState(false);
   const [activeTab, setActiveTab] = useState('transaction-analytics');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Pre-fill form with transaction data
+  // Pre-fill form with saved financial data
   useEffect(() => {
-    if (transactions.length > 0) {
+    if (financialData) {
+      setCashEquivalents(financialData.cash_equivalents);
+      setMonthlyExpenses(financialData.monthly_expenses);
+      setShortTermDebt(financialData.short_term_debt);
+      setSavings(financialData.savings);
+      setTotalIncome(financialData.total_income);
+      setTotalDebt(financialData.total_debt);
+      setTotalAssets(financialData.total_assets);
+      setDebtPayment(financialData.debt_payment);
+      setInvestmentAssets(financialData.investment_assets);
+      
+      // Show results if we have financial data
+      setShowResults(true);
+    } else if (transactions.length > 0) {
+      // Fallback to transaction data if no financial data is saved
       setMonthlyExpenses(analytics.totalExpense / 6); // Average monthly expenses over 6 months
       setTotalIncome(analytics.totalIncome);
       setSavings(analytics.netBalance > 0 ? analytics.netBalance : 0);
       
-      // Set a default value for other fields to help the user get started
+      // Set default values for other fields
       setCashEquivalents(analytics.netBalance > 0 ? analytics.netBalance : 10000);
       setShortTermDebt(10000);
       setTotalDebt(50000);
@@ -49,10 +69,9 @@ const Analysis = () => {
       setDebtPayment(5000);
       setInvestmentAssets(50000);
       
-      // If we have transaction data, show the results by default
       setShowResults(true);
     }
-  }, [transactions, analytics]);
+  }, [financialData, transactions, analytics]);
 
   const financialHealth = calculateFinancialHealth(
     cashEquivalents,
@@ -66,9 +85,34 @@ const Analysis = () => {
     investmentAssets
   );
 
-  const handleCalculate = (e: React.FormEvent) => {
+  const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowResults(true);
+    setIsSubmitting(true);
+    
+    try {
+      // Save data to database
+      await saveFinancialData.mutateAsync({
+        cash_equivalents: cashEquivalents,
+        monthly_expenses: monthlyExpenses,
+        short_term_debt: shortTermDebt,
+        savings: savings,
+        total_income: totalIncome,
+        total_debt: totalDebt,
+        total_assets: totalAssets,
+        debt_payment: debtPayment,
+        investment_assets: investmentAssets,
+      });
+      
+      setShowResults(true);
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Gagal menyimpan data",
+        description: error.message || "Terjadi kesalahan saat menyimpan data.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const healthyCount = Object.values(financialHealth).filter(metric => metric.isHealthy).length;
@@ -90,14 +134,24 @@ const Analysis = () => {
             <h1 className="text-3xl font-bold text-foreground">Analisis Kesehatan Keuangan</h1>
             <p className="text-muted-foreground">Evaluasi kondisi keuangan Anda secara menyeluruh</p>
           </div>
-          <Button 
-            variant="outline" 
-            className="border-primary text-primary hover:bg-primary/10 flex items-center gap-2"
-            onClick={() => navigate('/dashboard')}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Kembali ke Dashboard
-          </Button>
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              className="border-blue-500 text-blue-500 hover:bg-blue-500/10 flex items-center gap-2"
+              onClick={() => navigate('/financial-data')}
+            >
+              <Database className="h-4 w-4" />
+              Kelola Data Keuangan
+            </Button>
+            <Button 
+              variant="outline" 
+              className="border-primary text-primary hover:bg-primary/10 flex items-center gap-2"
+              onClick={() => navigate('/dashboard')}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Kembali ke Dashboard
+            </Button>
+          </div>
         </div>
 
         {/* This banner shows transaction-based metrics without requiring manual input */}
