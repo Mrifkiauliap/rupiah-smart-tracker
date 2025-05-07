@@ -303,12 +303,12 @@ const FinancialData = () => {
               <p>Data keuangan yang Anda masukkan akan digunakan untuk menghitung berbagai rasio keuangan penting seperti:</p>
               <ul className="list-disc pl-5 space-y-2">
                 <li><span className="font-medium">Likuiditas</span> - Mengukur kemampuan Anda memenuhi kebutuhan jangka pendek (Kas / Pengeluaran Bulanan ≥ 3 dan ≤ 6)</li>
-                <li><span className="font-medium">Rasio Lancar</span> - Mengukur kemampuan membayar utang jangka pendek (Kas / Utang Jangka Pendek > 1)</li>
-                <li><span className="font-medium">Rasio Tabungan</span> - Mengukur tingkat tabungan dari pendapatan (Tabungan / Total Pendapatan > 10%)</li>
-                <li><span className="font-medium">Rasio Utang</span> - Mengukur proporsi utang terhadap aset (Total Utang / Total Aset < 50%)</li>
-                <li><span className="font-medium">Pelunasan Utang</span> - Mengukur beban cicilan utang terhadap pendapatan (Cicilan Utang / Total Pendapatan < 30%)</li>
-                <li><span className="font-medium">Solvensi</span> - Mengukur kesehatan keuangan jangka panjang (Kekayaan Bersih / Total Aset > 50%)</li>
-                <li><span className="font-medium">Investasi</span> - Mengukur alokasi aset untuk investasi (Aset Investasi / Total Aset > 50%)</li>
+                <li><span className="font-medium">Rasio Lancar</span> - Mengukur kemampuan membayar utang jangka pendek (Kas / Utang Jangka Pendek ≥ 1)</li>
+                <li><span className="font-medium">Rasio Tabungan</span> - Mengukur tingkat tabungan dari pendapatan (Tabungan / Total Pendapatan ≥ 10%)</li>
+                <li><span className="font-medium">Rasio Utang</span> - Mengukur proporsi utang terhadap aset (Total Utang / Total Aset ≤ 50%)</li>
+                <li><span className="font-medium">Pelunasan Utang</span> - Mengukur beban cicilan utang terhadap pendapatan (Cicilan Utang / Total Pendapatan ≤ 30%)</li>
+                <li><span className="font-medium">Solvensi</span> - Mengukur kesehatan keuangan jangka panjang (Kekayaan Bersih / Total Aset ≥ 50%)</li>
+                <li><span className="font-medium">Investasi</span> - Mengukur alokasi aset untuk investasi (Aset Investasi / Total Aset ≥ 50%)</li>
               </ul>
             </div>
           </CardContent>

@@ -63,11 +63,11 @@ const Analysis = () => {
       
       // Set default values for other fields
       setCashEquivalents(analytics.netBalance > 0 ? analytics.netBalance : 10000);
-      setShortTermDebt(10000);
-      setTotalDebt(50000);
-      setTotalAssets(100000);
-      setDebtPayment(5000);
-      setInvestmentAssets(50000);
+      setShortTermDebt(0);
+      setTotalDebt(0);
+      setTotalAssets(0);
+      setDebtPayment(0);
+      setInvestmentAssets(0);
       
       setShowResults(true);
     }
