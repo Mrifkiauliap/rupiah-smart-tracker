@@ -14,6 +14,7 @@ import { useUserSettings } from '@/hooks/useUserSettings';
 import { useTransactionAnalytics } from '@/hooks/useTransactionAnalytics';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TransactionAnalyticsChart from '@/components/analysis/TransactionAnalyticsChart';
+import { Badge } from "@/components/ui/badge";
 
 const Analysis = () => {
   const navigate = useNavigate();
@@ -40,6 +41,17 @@ const Analysis = () => {
       setMonthlyExpenses(analytics.totalExpense / 6); // Average monthly expenses over 6 months
       setTotalIncome(analytics.totalIncome);
       setSavings(analytics.netBalance > 0 ? analytics.netBalance : 0);
+      
+      // Set a default value for other fields to help the user get started
+      setCashEquivalents(analytics.netBalance > 0 ? analytics.netBalance : 10000);
+      setShortTermDebt(10000);
+      setTotalDebt(50000);
+      setTotalAssets(100000);
+      setDebtPayment(5000);
+      setInvestmentAssets(50000);
+      
+      // If we have transaction data, show the results by default
+      setShowResults(true);
     }
   }, [transactions, analytics]);
 
@@ -82,12 +94,76 @@ const Analysis = () => {
           <Button 
             variant="outline" 
             className="border-primary text-primary hover:bg-primary/10 flex items-center gap-2"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
           >
             <ArrowLeft className="h-4 w-4" />
             Kembali ke Dashboard
           </Button>
         </div>
+
+        {/* This banner shows transaction-based metrics without requiring manual input */}
+        {transactions.length > 0 && (
+          <Card className="p-6 bg-card text-card-foreground mb-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">Berdasarkan Data Transaksi Anda</h2>
+                <Badge variant={analytics.financialMetrics.savingsRate.value >= 20 ? "default" : "destructive"}>
+                  {analytics.financialMetrics.savingsRate.value >= 20 ? "Keuangan Sehat" : "Perlu Perhatian"}
+                </Badge>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="p-4 bg-card rounded-lg border border-border">
+                  <div className="text-sm text-muted-foreground">Likuiditas</div>
+                  <div className="flex items-center justify-between mt-1">
+                    <div className="text-xl font-semibold">{analytics.financialMetrics.liquidity.value.toFixed(1)}x</div>
+                    {analytics.financialMetrics.liquidity.isHealthy ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    )}
+                  </div>
+                </div>
+                
+                <div className="p-4 bg-card rounded-lg border border-border">
+                  <div className="text-sm text-muted-foreground">Tingkat Tabungan</div>
+                  <div className="flex items-center justify-between mt-1">
+                    <div className="text-xl font-semibold">{analytics.financialMetrics.savingsRate.value.toFixed(1)}%</div>
+                    {analytics.financialMetrics.savingsRate.isHealthy ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    )}
+                  </div>
+                </div>
+                
+                <div className="p-4 bg-card rounded-lg border border-border">
+                  <div className="text-sm text-muted-foreground">Utang/Pendapatan</div>
+                  <div className="flex items-center justify-between mt-1">
+                    <div className="text-xl font-semibold">{analytics.financialMetrics.debtToIncome.value.toFixed(1)}%</div>
+                    {analytics.financialMetrics.debtToIncome.isHealthy ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    )}
+                  </div>
+                </div>
+                
+                <div className="p-4 bg-card rounded-lg border border-border">
+                  <div className="text-sm text-muted-foreground">Rasio Pengeluaran</div>
+                  <div className="flex items-center justify-between mt-1">
+                    <div className="text-xl font-semibold">{analytics.financialMetrics.expenseRatio.value.toFixed(1)}%</div>
+                    {analytics.financialMetrics.expenseRatio.isHealthy ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-2 mb-6">

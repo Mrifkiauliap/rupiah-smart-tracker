@@ -13,14 +13,34 @@ import { useTheme } from "@/components/theme-provider";
 import { useAuth } from "@/components/AuthProvider";
 import { Moon, Sun, Settings, LogOut, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useUserSettings } from "@/hooks/useUserSettings";
+import { useToast } from "@/components/ui/use-toast";
 
 export function UserDropdown() {
   const { setTheme, theme } = useTheme();
   const { user, signOut } = useAuth();
+  const { settings, updateSettings } = useUserSettings();
+  const { toast } = useToast();
 
   const handleLogout = async () => {
     await signOut();
     // The AuthProvider will handle navigation after signOut
+  };
+
+  const toggleTheme = async () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    
+    // Update the user settings in the database
+    try {
+      await updateSettings({ theme: newTheme });
+    } catch (error) {
+      toast({
+        title: "Gagal memperbarui tema",
+        description: "Pengaturan tema tidak dapat disimpan ke database",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -55,7 +75,7 @@ export function UserDropdown() {
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+        <DropdownMenuItem onClick={toggleTheme}>
           {theme === "dark" ? (
             <Sun className="mr-2 h-4 w-4" />
           ) : (
