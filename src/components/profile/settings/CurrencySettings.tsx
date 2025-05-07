@@ -4,8 +4,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 
 const currencies = [
-  { value: 'USD', label: 'USD - US Dollar ($)' },
   { value: 'IDR', label: 'IDR - Indonesian Rupiah (Rp)' },
+  { value: 'USD', label: 'USD - US Dollar ($)' },
   { value: 'EUR', label: 'EUR - Euro (€)' },
   { value: 'GBP', label: 'GBP - British Pound (£)' }
 ];
