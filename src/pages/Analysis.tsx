@@ -131,7 +131,7 @@ const Analysis = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center mb-4">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold text-foreground">Analisis Kesehatan Keuangan</h1>
+            <h1 className="text-3xl font-bold text-foreground">SIPAKU - Analisis Kesehatan Keuangan</h1>
             <p className="text-muted-foreground">Evaluasi kondisi keuangan Anda secara menyeluruh</p>
           </div>
           <div className="flex space-x-2">

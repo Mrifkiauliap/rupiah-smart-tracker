@@ -61,7 +61,7 @@ const Index = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Dashboard</h1>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white">SIPAKU</h1>
             <p className="text-gray-600 dark:text-gray-300">Kelola keuangan Anda dengan mudah</p>
           </div>
           <UserDropdown />
