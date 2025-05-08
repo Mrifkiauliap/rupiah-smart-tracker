@@ -23,7 +23,7 @@ export function DangerZone() {
       // First delete user's data
       // Delete financial metrics
       const { error: metricsError } = await supabase
-        .from('financial_metrics')
+        .from('financial_data')
         .delete()
         .eq('user_id', user.id);
       
