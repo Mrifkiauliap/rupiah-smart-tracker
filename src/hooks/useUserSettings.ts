@@ -15,7 +15,7 @@ export function useUserSettings() {
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [settings, setSettings] = useState<UserSettings>({
-    currency: 'USD',
+    currency: 'IDR',
     theme: 'light',
     number_format: 'id-ID',
   });
@@ -54,7 +54,7 @@ export function useUserSettings() {
             .from('user_settings')
             .insert({
               user_id: user.id,
-              currency: 'USD',
+              currency: 'IDR',
               theme: 'light',
               number_format: 'id-ID',
             })
