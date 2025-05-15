@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
@@ -210,12 +209,16 @@ export function useFinancialData() {
     // Get current financial data
     const currentData = await fetchFinancialData();
     
+    // Calculate net balance (income - expenses)
+    const netBalance = Math.max(0, income - expenses);
+    
     // Prepare updated values
     const updatedValues: Partial<FinancialDataInput> = {
       total_income: income,
       monthly_expenses: monthlyExpenses,
       debt_payment: debtPayments,
-      savings: Math.max(0, income - expenses) // Estimate savings as income minus expenses
+      cash_equivalents: netBalance,  // Put net balance into cash_equivalents instead of savings
+      savings: currentData?.savings || 0  // Preserve existing savings value
     };
 
     // Update or create financial data
@@ -237,7 +240,6 @@ export function useFinancialData() {
       // If no data exists, create with default values for other fields
       const newData = {
         ...updatedValues,
-        cash_equivalents: Math.max(0, income - expenses), // Estimate cash as net income
         short_term_debt: 0,
         total_debt: debtPayments * 12, // Rough estimate of total debt based on payments
         total_assets: Math.max(0, income - expenses) * 2, // Very rough estimate
