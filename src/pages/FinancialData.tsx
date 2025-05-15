@@ -15,10 +15,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Save, Calculator, RefreshCw } from "lucide-react";
+import { ArrowLeft, Save, Database, RefreshCw, Trash2 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useFinancialData } from '@/hooks/useFinancialData';
 import { useAuth } from '@/components/AuthProvider';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 // Define form validation schema
 const formSchema = z.object({
@@ -55,8 +56,10 @@ const FinancialData = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const { financialData, isLoading, saveFinancialData } = useFinancialData();
+  const { financialData, isLoading, saveFinancialData, resetData, syncData } = useFinancialData();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -110,6 +113,39 @@ const FinancialData = () => {
     }
   };
   
+  const handleSync = async () => {
+    try {
+      setIsSyncing(true);
+      await syncData.mutateAsync();
+    } catch (error) {
+      console.error('Error syncing data:', error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const handleReset = async () => {
+    try {
+      setIsResetting(true);
+      await resetData.mutateAsync();
+      form.reset({
+        cash_equivalents: 0,
+        monthly_expenses: 0,
+        short_term_debt: 0,
+        savings: 0,
+        total_income: 0,
+        total_debt: 0,
+        total_assets: 0,
+        debt_payment: 0,
+        investment_assets: 0,
+      });
+    } catch (error) {
+      console.error('Error resetting data:', error);
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   const goToAnalysis = () => {
     navigate('/analysis');
   };
@@ -130,6 +166,51 @@ const FinancialData = () => {
             <ArrowLeft className="h-4 w-4" />
             Kembali ke Dashboard
           </Button>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-4 mb-6 justify-between">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button 
+              variant="outline"
+              className="gap-2 border-blue-500 text-blue-600 hover:bg-blue-50"
+              onClick={handleSync}
+              disabled={isSyncing}
+            >
+              {isSyncing ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+              Sinkronkan dari Transaksi
+            </Button>
+
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="gap-2 border-red-500 text-red-600 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Reset Data
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Reset Data Keuangan?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tindakan ini akan mereset semua data keuangan Anda menjadi 0. 
+                    Data yang sudah direset tidak dapat dikembalikan.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleReset} 
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    disabled={isResetting}
+                  >
+                    {isResetting ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : "Ya, Reset Data"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
 
         <Card className="overflow-hidden border-l-4 border-l-blue-500">
@@ -285,7 +366,7 @@ const FinancialData = () => {
                     className="flex-1 gap-2"
                     onClick={goToAnalysis}
                   >
-                    <Calculator className="h-4 w-4" />
+                    <Database className="h-4 w-4" />
                     Lihat Analisis
                   </Button>
                 </div>
