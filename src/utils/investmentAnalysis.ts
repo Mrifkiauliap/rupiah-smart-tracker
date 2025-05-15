@@ -1,4 +1,3 @@
-
 export type RiskPreference = 'conservative' | 'moderate' | 'aggressive';
 export type BudgetLevel = 'low' | 'medium' | 'high';
 

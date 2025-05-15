@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import FinancialHealthForm from '@/components/analysis/FinancialHealthForm';
 import FinancialMetricsTable from '@/components/analysis/FinancialMetricsTable';
 import Recommendations from '@/components/analysis/Recommendations';
-import InvestmentAnalysisForm from '@/components/analysis/InvestmentAnalysisForm';
 import { calculateFinancialHealth } from '@/utils/financialCalculations';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useUserSettings } from '@/hooks/useUserSettings';
@@ -36,7 +35,6 @@ const Analysis = () => {
   const [debtPayment, setDebtPayment] = useState<number>(0);
   const [investmentAssets, setInvestmentAssets] = useState<number>(0);
   const [showResults, setShowResults] = useState(false);
-  const [showInvestmentAnalysis, setShowInvestmentAnalysis] = useState(false);
   const [activeTab, setActiveTab] = useState('transaction-analytics');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -285,22 +283,8 @@ const Analysis = () => {
                   
                   <FinancialMetricsTable financialHealth={financialHealth} />
                   <Recommendations financialHealth={financialHealth} />
-
-                  {!showInvestmentAnalysis && (
-                    <Button
-                      onClick={() => setShowInvestmentAnalysis(true)}
-                      variant="outline"
-                      className="w-full mt-4"
-                    >
-                      Tambahkan Analisis Investasi
-                    </Button>
-                  )}
                 </div>
               </Card>
-            )}
-
-            {showInvestmentAnalysis && (
-              <InvestmentAnalysisForm onClose={() => setShowInvestmentAnalysis(false)} />
             )}
           </TabsContent>
         </Tabs>

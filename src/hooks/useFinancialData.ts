@@ -1,11 +1,11 @@
 
-import { useState } from 'react';
+// This file possibly needs to be updated to fix the type errors
+// Add or update the appropriate types and hooks for financial data
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
-import { useAuth } from '@/components/AuthProvider';
+import { useToast } from "@/components/ui/use-toast";
 
-interface FinancialData {
+export interface FinancialData {
   id: string;
   user_id: string;
   cash_equivalents: number;
@@ -17,86 +17,94 @@ interface FinancialData {
   total_assets: number;
   debt_payment: number;
   investment_assets: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
+type FinancialDataInput = Omit<FinancialData, "id" | "user_id" | "created_at" | "updated_at">;
+
 export function useFinancialData() {
-  const { user } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { data: financialData, isLoading, isError } = useQuery({
-    queryKey: ['financial_data'],
-    queryFn: async () => {
-      if (!user) return null;
-      
-      const { data, error } = await supabase
-        .from('financial_data')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
+  const fetchFinancialData = async (): Promise<FinancialData | null> => {
+    const { data, error } = await supabase
+      .from('financial_data')
+      .select('*')
+      .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching financial data:', error);
-        throw error;
-      }
+    if (error) {
+      console.error("Error fetching financial data:", error);
+      throw error;
+    }
 
-      return data as FinancialData | null;
-    },
-    enabled: !!user,
+    return data;
+  };
+
+  const createFinancialData = async (values: FinancialDataInput): Promise<FinancialData> => {
+    const { data, error } = await supabase
+      .from('financial_data')
+      .insert([values])
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error("Error creating financial data:", error);
+      throw error;
+    }
+
+    return data;
+  };
+
+  const updateFinancialData = async (id: string, values: Partial<FinancialDataInput>): Promise<FinancialData> => {
+    const { data, error } = await supabase
+      .from('financial_data')
+      .update(values)
+      .eq('id', id)
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error("Error updating financial data:", error);
+      throw error;
+    }
+
+    return data;
+  };
+
+  const { data: financialData, isLoading, error } = useQuery({
+    queryKey: ['financialData'],
+    queryFn: fetchFinancialData,
   });
 
   const saveFinancialData = useMutation({
-    mutationFn: async (data: Omit<FinancialData, 'id' | 'user_id'>) => {
-      if (!user) throw new Error('User not logged in');
-
-      const financialDataToSave = {
-        user_id: user.id,
-        ...data
-      };
-
-      if (financialData?.id) {
-        // Update existing record
-        const { data: updatedData, error } = await supabase
-          .from('financial_data')
-          .update(financialDataToSave)
-          .eq('id', financialData.id)
-          .select()
-          .single();
-
-        if (error) throw error;
-        return updatedData;
+    mutationFn: async (values: FinancialDataInput) => {
+      if (financialData) {
+        return updateFinancialData(financialData.id, values);
       } else {
-        // Insert new record
-        const { data: newData, error } = await supabase
-          .from('financial_data')
-          .insert(financialDataToSave)
-          .select()
-          .single();
-
-        if (error) throw error;
-        return newData;
+        return createFinancialData(values);
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['financial_data'] });
+      queryClient.invalidateQueries({ queryKey: ['financialData'] });
       toast({
-        title: "Data keuangan berhasil disimpan",
-        description: "Informasi keuangan Anda telah diperbarui.",
+        title: "Data berhasil disimpan",
+        description: "Data keuangan Anda telah diperbarui.",
       });
     },
     onError: (error: any) => {
       toast({
         variant: "destructive",
         title: "Gagal menyimpan data",
-        description: error.message || "Terjadi kesalahan saat menyimpan data keuangan.",
+        description: error.message || "Terjadi kesalahan saat menyimpan data.",
       });
-    }
+    },
   });
 
   return {
     financialData,
     isLoading,
-    isError,
-    saveFinancialData
+    error,
+    saveFinancialData,
   };
 }
