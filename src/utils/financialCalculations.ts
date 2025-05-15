@@ -28,37 +28,37 @@ export const calculateFinancialHealth = (
 ): FinancialHealth => {
   const results = {
     liquidity: {
-      value: cashEquivalents / monthlyExpenses,
+      value: isNaN(cashEquivalents / monthlyExpenses) ? 0 : cashEquivalents / monthlyExpenses,
       isHealthy: false,
       rule: "Kas / Pengeluaran Bulanan ≥ 3 dan ≤ 6"
     },
     currentRatio: {
-      value: cashEquivalents / (shortTermDebt || 1),
+      value: isNaN(cashEquivalents / (shortTermDebt || 1)) ? 0 : cashEquivalents / (shortTermDebt || 1),
       isHealthy: false,
       rule: "Kas / Utang Jangka Pendek > 1"
     },
     savingsRatio: {
-      value: (savings / totalIncome) * 100,
+      value: isNaN((savings / totalIncome) * 100) ? 0 : (savings / totalIncome) * 100,
       isHealthy: false,
       rule: "Tabungan / Total Pendapatan > 10%"
     },
     debtRatio: {
-      value: (totalDebt / totalAssets) * 100,
+      value: isNaN((totalDebt / totalAssets) * 100) ? 0 : (totalDebt / totalAssets) * 100,
       isHealthy: false,
       rule: "Total Utang / Total Aset < 50%"
     },
     debtServiceRatio: {
-      value: (debtPayment / totalIncome) * 100,
+      value: isNaN((debtPayment / totalIncome) * 100) ? 0 : (debtPayment / totalIncome) * 100,
       isHealthy: false,
       rule: "Cicilan Utang / Total Pendapatan < 30%"
     },
     solvencyRatio: {
-      value: ((totalAssets - totalDebt) / totalAssets) * 100,
+      value: isNaN(((totalAssets - totalDebt) / totalAssets) * 100) ? 0 : ((totalAssets - totalDebt) / totalAssets) * 100,
       isHealthy: false,
       rule: "Kekayaan Bersih / Total Aset > 50%"
     },
     investmentRatio: {
-      value: (investmentAssets / totalAssets) * 100,
+      value: isNaN((investmentAssets / totalAssets) * 100) ? 0 : (investmentAssets / totalAssets) * 100,
       isHealthy: false,
       rule: "Aset Investasi / Total Aset > 50%"
     }

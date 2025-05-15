@@ -41,7 +41,7 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
       actualValue: `${analytics.financialMetrics.savingsRate.value.toFixed(2)}%`
     },
     {
-      metric: "Efisiensi Pengeluaran",
+      metric: "Rasio Pengeluaran",
       value: Math.max(0, 100 - analytics.financialMetrics.expenseRatio.value), // Inverse since lower is better
       fullMark: 100,
       isHealthy: analytics.financialMetrics.expenseRatio.isHealthy,
@@ -134,7 +134,7 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
                     <span className="font-medium">Likuiditas</span>
                     {analytics.financialMetrics.liquidity.isHealthy ? (
                       <Badge className="bg-green-500 hover:bg-green-600">
-                        {analytics.financialMetrics.liquidity.value >= 6 ? "Sangat Bagus" : "Cukup Oke"}
+                        {analytics.financialMetrics.liquidity.value >= 6 ? "Sangat Sehat" : "Sehat"}
                       </Badge>
                     ) : (
                       <Badge variant="destructive">Perhatikan</Badge>
@@ -208,7 +208,7 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
                       )}
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground"></span> {/* Empty description as requested */}
+                      <span className="text-sm text-muted-foreground">Persentase total utang terhadap total pendapatan</span>
                       <span className={`font-semibold ${analytics.financialMetrics.debtToIncome.isHealthy ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
                         {analytics.financialMetrics.debtToIncome.value.toFixed(2)}%
                       </span>
