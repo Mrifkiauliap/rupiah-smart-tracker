@@ -13,13 +13,26 @@ import {
   FormLabel,
   FormMessage 
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Save, Database, RefreshCw, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, Database, RefreshCw, Trash2, Clock } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { useFinancialData } from '@/hooks/useFinancialData';
+import { useFinancialData, TimePeriod } from '@/hooks/useFinancialData';
 import { useAuth } from '@/components/AuthProvider';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Define form validation schema
 const formSchema = z.object({
@@ -60,6 +73,7 @@ const FinancialData = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('6months');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -116,7 +130,7 @@ const FinancialData = () => {
   const handleSync = async () => {
     try {
       setIsSyncing(true);
-      await syncData.mutateAsync();
+      await syncData.mutateAsync(selectedPeriod);
     } catch (error) {
       console.error('Error syncing data:', error);
     } finally {
@@ -170,15 +184,62 @@ const FinancialData = () => {
 
         <div className="flex flex-col md:flex-row gap-4 mb-6 justify-between">
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button 
-              variant="outline"
-              className="gap-2 border-blue-500 text-blue-600 hover:bg-blue-50"
-              onClick={handleSync}
-              disabled={isSyncing}
-            >
-              {isSyncing ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
-              Sinkronkan dari Transaksi
-            </Button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="outline"
+                  className="gap-2 border-blue-500 text-blue-600 hover:bg-blue-50"
+                  disabled={isSyncing}
+                >
+                  {isSyncing ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+                  Sinkronkan dari Transaksi
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80">
+                <div className="space-y-4">
+                  <h4 className="font-medium">Sinkronkan Data dari Transaksi</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Pilih rentang waktu untuk mengambil data transaksi
+                  </p>
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        variant={selectedPeriod === '1month' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedPeriod('1month')}
+                        className="w-full"
+                      >
+                        1 Bulan
+                      </Button>
+                      <Button
+                        variant={selectedPeriod === '6months' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedPeriod('6months')}
+                        className="w-full"
+                      >
+                        6 Bulan
+                      </Button>
+                      <Button
+                        variant={selectedPeriod === '1year' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedPeriod('1year')}
+                        className="w-full"
+                      >
+                        1 Tahun
+                      </Button>
+                    </div>
+                    <Button 
+                      onClick={handleSync}
+                      className="w-full"
+                      disabled={isSyncing}
+                    >
+                      {isSyncing && <RefreshCw className="h-4 w-4 mr-2 animate-spin" />}
+                      Sinkronkan
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
 
             <AlertDialog>
               <AlertDialogTrigger asChild>

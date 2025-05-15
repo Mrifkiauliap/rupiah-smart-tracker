@@ -38,9 +38,10 @@ const Analysis = () => {
   const [activeTab, setActiveTab] = useState('transaction-analytics');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Pre-fill form with saved financial data
+  // Pre-fill form with data from either saved financial data or transaction analytics
   useEffect(() => {
     if (financialData) {
+      // Use saved financial data as first priority
       setCashEquivalents(financialData.cash_equivalents);
       setMonthlyExpenses(financialData.monthly_expenses);
       setShortTermDebt(financialData.short_term_debt);
@@ -63,7 +64,7 @@ const Analysis = () => {
       setCashEquivalents(analytics.netBalance > 0 ? analytics.netBalance : 10000);
       setShortTermDebt(0);
       setTotalDebt(0);
-      setTotalAssets(0);
+      setTotalAssets(analytics.netBalance > 0 ? analytics.netBalance * 2 : 20000); // Rough estimate
       setDebtPayment(0);
       setInvestmentAssets(0);
       
@@ -71,6 +72,7 @@ const Analysis = () => {
     }
   }, [financialData, transactions, analytics]);
 
+  // Calculate financial health metrics
   const financialHealth = calculateFinancialHealth(
     cashEquivalents,
     monthlyExpenses,
@@ -83,6 +85,7 @@ const Analysis = () => {
     investmentAssets
   );
 
+  // Function to handle form submission and save data
   const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -124,6 +127,66 @@ const Analysis = () => {
     }).format(amount);
   };
 
+  // Generate enhanced financial metrics for display
+  // This will ensure we always have all metrics regardless of data source
+  const enhancedAnalytics = React.useMemo(() => {
+    // Start with the analytics from transactions
+    const enhanced = { ...analytics };
+    
+    // If we have financial data, replace/enhance specific metrics
+    if (financialData) {
+      // Replace liquidity ratio if we have cash equivalents and monthly expenses
+      if (financialData.cash_equivalents > 0 && financialData.monthly_expenses > 0) {
+        enhanced.financialMetrics.liquidity = {
+          ...enhanced.financialMetrics.liquidity,
+          value: financialData.cash_equivalents / financialData.monthly_expenses,
+          isHealthy: (financialData.cash_equivalents / financialData.monthly_expenses) >= 3 && 
+                    (financialData.cash_equivalents / financialData.monthly_expenses) <= 6
+        };
+      }
+      
+      // Add/replace debt to income ratio if we have total debt and total income
+      if (financialData.total_debt > 0 && financialData.total_income > 0) {
+        enhanced.financialMetrics.debtToIncome = {
+          ...enhanced.financialMetrics.debtToIncome,
+          value: (financialData.total_debt / financialData.total_income) * 100,
+          isHealthy: (financialData.total_debt / financialData.total_income) * 100 < 30
+        };
+      }
+      
+      // Add/replace savings rate if we have savings and total income
+      if (financialData.savings > 0 && financialData.total_income > 0) {
+        enhanced.financialMetrics.savingsRate = {
+          ...enhanced.financialMetrics.savingsRate,
+          value: (financialData.savings / financialData.total_income) * 100,
+          isHealthy: (financialData.savings / financialData.total_income) * 100 > 20
+        };
+      }
+      
+      // Add solvency ratio if missing (based on financial data)
+      if (financialData.total_assets > 0) {
+        enhanced.financialMetrics.solvencyRatio = {
+          value: ((financialData.total_assets - financialData.total_debt) / financialData.total_assets) * 100,
+          isHealthy: ((financialData.total_assets - financialData.total_debt) / financialData.total_assets) * 100 > 50,
+          formula: 'Kekayaan Bersih / Total Aset × 100%',
+          description: 'Kesehatan keuangan jangka panjang'
+        };
+      }
+      
+      // Add investment ratio if missing (based on financial data)
+      if (financialData.total_assets > 0 && financialData.investment_assets > 0) {
+        enhanced.financialMetrics.investmentRatio = {
+          value: (financialData.investment_assets / financialData.total_assets) * 100,
+          isHealthy: (financialData.investment_assets / financialData.total_assets) * 100 > 50,
+          formula: 'Aset Investasi / Total Aset × 100%',
+          description: 'Alokasi aset untuk investasi'
+        };
+      }
+    }
+    
+    return enhanced;
+  }, [analytics, financialData]);
+
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -158,8 +221,8 @@ const Analysis = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Berdasarkan Data Transaksi Anda</h2>
-                <Badge variant={analytics.financialMetrics.savingsRate.value >= 20 ? "default" : "destructive"}>
-                  {analytics.financialMetrics.savingsRate.value >= 20 ? "Keuangan Sehat" : "Perlu Perhatian"}
+                <Badge variant={enhancedAnalytics.financialMetrics.savingsRate.value >= 20 ? "default" : "destructive"}>
+                  {enhancedAnalytics.financialMetrics.savingsRate.value >= 20 ? "Keuangan Sehat" : "Perlu Perhatian"}
                 </Badge>
               </div>
               
@@ -167,8 +230,8 @@ const Analysis = () => {
                 <div className="p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <div className="text-sm text-muted-foreground">Likuiditas</div>
                   <div className="flex items-center justify-between mt-1">
-                    <div className="text-xl font-semibold">{analytics.financialMetrics.liquidity.value.toFixed(1)}x</div>
-                    {analytics.financialMetrics.liquidity.isHealthy ? (
+                    <div className="text-xl font-semibold">{enhancedAnalytics.financialMetrics.liquidity.value.toFixed(1)}x</div>
+                    {enhancedAnalytics.financialMetrics.liquidity.isHealthy ? (
                       <CheckCircle2 className="h-5 w-5 text-green-500" />
                     ) : (
                       <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -179,8 +242,8 @@ const Analysis = () => {
                 <div className="p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <div className="text-sm text-muted-foreground">Tingkat Tabungan</div>
                   <div className="flex items-center justify-between mt-1">
-                    <div className="text-xl font-semibold">{analytics.financialMetrics.savingsRate.value.toFixed(1)}%</div>
-                    {analytics.financialMetrics.savingsRate.isHealthy ? (
+                    <div className="text-xl font-semibold">{enhancedAnalytics.financialMetrics.savingsRate.value.toFixed(1)}%</div>
+                    {enhancedAnalytics.financialMetrics.savingsRate.isHealthy ? (
                       <CheckCircle2 className="h-5 w-5 text-green-500" />
                     ) : (
                       <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -191,20 +254,29 @@ const Analysis = () => {
                 <div className="p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <div className="text-sm text-muted-foreground">Utang/Pendapatan</div>
                   <div className="flex items-center justify-between mt-1">
-                    <div className="text-xl font-semibold">{analytics.financialMetrics.debtToIncome.value.toFixed(1)}%</div>
-                    {analytics.financialMetrics.debtToIncome.isHealthy ? (
+                    <div className="text-xl font-semibold">
+                      {enhancedAnalytics.financialMetrics.debtToIncome ? 
+                        enhancedAnalytics.financialMetrics.debtToIncome.value.toFixed(1) + '%' : 
+                        financialData && financialData.total_income > 0 ? 
+                          ((financialData.total_debt / financialData.total_income) * 100).toFixed(1) + '%' : 
+                          '0%'}
+                    </div>
+                    {enhancedAnalytics.financialMetrics.debtToIncome ? 
+                      (enhancedAnalytics.financialMetrics.debtToIncome.isHealthy ? (
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      ) : (
+                        <AlertTriangle className="h-5 w-5 text-amber-500" />
+                      )) : 
                       <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <AlertTriangle className="h-5 w-5 text-amber-500" />
-                    )}
+                    }
                   </div>
                 </div>
                 
                 <div className="p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors">
                   <div className="text-sm text-muted-foreground">Rasio Pengeluaran</div>
                   <div className="flex items-center justify-between mt-1">
-                    <div className="text-xl font-semibold">{analytics.financialMetrics.expenseRatio.value.toFixed(1)}%</div>
-                    {analytics.financialMetrics.expenseRatio.isHealthy ? (
+                    <div className="text-xl font-semibold">{enhancedAnalytics.financialMetrics.expenseRatio.value.toFixed(1)}%</div>
+                    {enhancedAnalytics.financialMetrics.expenseRatio.isHealthy ? (
                       <CheckCircle2 className="h-5 w-5 text-green-500" />
                     ) : (
                       <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -230,7 +302,7 @@ const Analysis = () => {
           
           <TabsContent value="transaction-analytics">
             <TransactionAnalyticsChart 
-              analytics={analytics} 
+              analytics={enhancedAnalytics} 
               formatCurrency={formatCurrency} 
             />
           </TabsContent>

@@ -1,5 +1,4 @@
-// This file possibly needs to be updated to fix the type errors
-// Add or update the appropriate types and hooks for financial data
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/components/ui/use-toast";
@@ -20,7 +19,19 @@ export interface FinancialData {
   updated_at?: string;
 }
 
-type FinancialDataInput = Omit<FinancialData, "id" | "user_id" | "created_at" | "updated_at">;
+export type FinancialDataInput = {
+  cash_equivalents: number;
+  monthly_expenses: number;
+  short_term_debt: number;
+  savings: number;
+  total_income: number;
+  total_debt: number;
+  total_assets: number;
+  debt_payment: number;
+  investment_assets: number;
+};
+
+export type TimePeriod = '1month' | '6months' | '1year';
 
 export function useFinancialData() {
   const queryClient = useQueryClient();
@@ -43,7 +54,7 @@ export function useFinancialData() {
   const createFinancialData = async (values: FinancialDataInput): Promise<FinancialData> => {
     const { data, error } = await supabase
       .from('financial_data')
-      .insert([values])
+      .insert(values)
       .select('*')
       .single();
 
@@ -71,7 +82,7 @@ export function useFinancialData() {
     return data;
   };
 
-  // New function to reset financial data
+  // Reset financial data to zeros
   const resetFinancialData = async (id: string): Promise<void> => {
     const resetValues: Partial<FinancialDataInput> = {
       cash_equivalents: 0,
@@ -96,12 +107,33 @@ export function useFinancialData() {
     }
   };
 
-  // New function to sync data from transactions
-  const syncFromTransactions = async (): Promise<FinancialData> => {
-    // First get the transactions data
+  // Sync data from transactions with specified time period
+  const syncFromTransactions = async (period: TimePeriod = '6months'): Promise<FinancialData> => {
+    // Calculate date range based on selected period
+    const now = new Date();
+    let startDate = new Date();
+    
+    switch(period) {
+      case '1month':
+        startDate.setMonth(now.getMonth() - 1);
+        break;
+      case '6months':
+        startDate.setMonth(now.getMonth() - 6);
+        break;
+      case '1year':
+        startDate.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        startDate.setMonth(now.getMonth() - 6); // Default to 6 months
+    }
+
+    const startDateString = startDate.toISOString();
+
+    // First get the transactions data within the selected period
     const { data: transactions, error: transactionsError } = await supabase
       .from('transactions')
-      .select('*');
+      .select('*')
+      .gte('date', startDateString);
 
     if (transactionsError) {
       console.error("Error fetching transactions:", transactionsError);
@@ -117,8 +149,17 @@ export function useFinancialData() {
       .filter(tx => tx.type === 'expense')
       .reduce((sum, tx) => sum + Number(tx.amount), 0);
 
+    // Calculate monthly average expenses
+    const monthsDiff = period === '1month' ? 1 : (period === '6months' ? 6 : 12);
+    const monthlyExpenses = expenses / monthsDiff;
+
     const debtPayments = transactions
-      .filter(tx => tx.type === 'expense' && tx.category === 'Utang')
+      .filter(tx => tx.type === 'expense' && (
+        tx.category.toLowerCase().includes('utang') || 
+        tx.category.toLowerCase().includes('debt') || 
+        tx.category.toLowerCase().includes('loan') || 
+        tx.category.toLowerCase().includes('credit')
+      ))
       .reduce((sum, tx) => sum + Number(tx.amount), 0);
 
     // Get current financial data
@@ -127,9 +168,9 @@ export function useFinancialData() {
     // Prepare updated values
     const updatedValues: Partial<FinancialDataInput> = {
       total_income: income,
-      monthly_expenses: expenses,
-      debt_payment: debtPayments
-      // We keep other fields as they are since they might not be derivable from transactions
+      monthly_expenses: monthlyExpenses,
+      debt_payment: debtPayments,
+      savings: Math.max(0, income - expenses) // Estimate savings as income minus expenses
     };
 
     // Update or create financial data
@@ -151,17 +192,16 @@ export function useFinancialData() {
       // If no data exists, create with default values for other fields
       const newData: FinancialDataInput = {
         ...updatedValues,
-        cash_equivalents: 0,
+        cash_equivalents: Math.max(0, income - expenses), // Estimate cash as net income
         short_term_debt: 0,
-        savings: 0,
-        total_debt: 0,
-        total_assets: 0,
+        total_debt: debtPayments * 12, // Rough estimate of total debt based on payments
+        total_assets: Math.max(0, income - expenses) * 2, // Very rough estimate
         investment_assets: 0
       } as FinancialDataInput;
 
       const { data, error } = await supabase
         .from('financial_data')
-        .insert([newData])
+        .insert(newData)
         .select('*')
         .single();
 
@@ -227,9 +267,9 @@ export function useFinancialData() {
     }
   });
 
-  // Mutation for syncing data from transactions
+  // Mutation for syncing data from transactions with period option
   const syncData = useMutation({
-    mutationFn: syncFromTransactions,
+    mutationFn: (period: TimePeriod = '6months') => syncFromTransactions(period),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['financialData'] });
       toast({

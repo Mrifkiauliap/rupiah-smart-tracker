@@ -1,4 +1,7 @@
 
+// We only need to modify a small part of the file to ensure the financial health radar chart uses all available metrics
+// Update the code that prepares data for the financial health radar chart
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -29,13 +32,6 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
       actualValue: analytics.financialMetrics.liquidity.value.toFixed(2)
     },
     {
-      metric: "Utang/Pendapatan",
-      value: Math.max(0, 100 - analytics.financialMetrics.debtToIncome.value), // Inverse since lower is better
-      fullMark: 100,
-      isHealthy: analytics.financialMetrics.debtToIncome.isHealthy,
-      actualValue: `${analytics.financialMetrics.debtToIncome.value.toFixed(2)}%`
-    },
-    {
       metric: "Tingkat Tabungan",
       value: Math.min(analytics.financialMetrics.savingsRate.value * 5, 100), // Scale to 0-100%
       fullMark: 100,
@@ -50,6 +46,39 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
       actualValue: `${analytics.financialMetrics.expenseRatio.value.toFixed(2)}%`
     }
   ];
+  
+  // Add debt-to-income ratio if available
+  if (analytics.financialMetrics.debtToIncome) {
+    financialHealthData.push({
+      metric: "Utang/Pendapatan",
+      value: Math.max(0, 100 - analytics.financialMetrics.debtToIncome.value), // Inverse since lower is better
+      fullMark: 100,
+      isHealthy: analytics.financialMetrics.debtToIncome.isHealthy,
+      actualValue: `${analytics.financialMetrics.debtToIncome.value.toFixed(2)}%`
+    });
+  }
+  
+  // Add solvency ratio if available
+  if (analytics.financialMetrics.solvencyRatio) {
+    financialHealthData.push({
+      metric: "Solvensi",
+      value: analytics.financialMetrics.solvencyRatio.value,
+      fullMark: 100,
+      isHealthy: analytics.financialMetrics.solvencyRatio.isHealthy,
+      actualValue: `${analytics.financialMetrics.solvencyRatio.value.toFixed(2)}%`
+    });
+  }
+  
+  // Add investment ratio if available
+  if (analytics.financialMetrics.investmentRatio) {
+    financialHealthData.push({
+      metric: "Investasi",
+      value: analytics.financialMetrics.investmentRatio.value,
+      fullMark: 100,
+      isHealthy: analytics.financialMetrics.investmentRatio.isHealthy,
+      actualValue: `${analytics.financialMetrics.investmentRatio.value.toFixed(2)}%`
+    });
+  }
 
   return (
     <div className="space-y-6">
@@ -104,7 +133,9 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
                         key === 'liquidity' ? 'Likuiditas' :
                         key === 'debtToIncome' ? 'Utang/Pendapatan' :
                         key === 'savingsRate' ? 'Tingkat Tabungan' : 
-                        'Rasio Pengeluaran'
+                        key === 'expenseRatio' ? 'Rasio Pengeluaran' :
+                        key === 'solvencyRatio' ? 'Solvensi' :
+                        key === 'investmentRatio' ? 'Investasi' : key
                       }</span>
                       {metric.isHealthy ? (
                         <Badge className="bg-green-500 hover:bg-green-600">Sehat</Badge>

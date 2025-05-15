@@ -20,7 +20,7 @@ export interface TransactionAnalytics {
     amount: number;
     percentage: number;
   }[];
-  // New metrics for financial health
+  // Financial metrics
   financialMetrics: {
     liquidity: {
       value: number;
@@ -28,7 +28,7 @@ export interface TransactionAnalytics {
       formula: string;
       description: string;
     };
-    debtToIncome: {
+    debtToIncome?: {
       value: number;
       isHealthy: boolean;
       formula: string;
@@ -41,6 +41,18 @@ export interface TransactionAnalytics {
       description: string;
     };
     expenseRatio: {
+      value: number;
+      isHealthy: boolean;
+      formula: string;
+      description: string;
+    };
+    solvencyRatio?: {
+      value: number;
+      isHealthy: boolean;
+      formula: string;
+      description: string;
+    };
+    investmentRatio?: {
       value: number;
       isHealthy: boolean;
       formula: string;
@@ -176,26 +188,36 @@ export function useTransactionAnalytics(transactions: Transaction[], months = 6)
     const expenseToIncomeRatio = avgMonthlyIncome > 0 ? (avgMonthlyExpense / avgMonthlyIncome) * 100 : 0;
     
     // Simple debt-to-income calculation based on recent transactions
-    // This is an estimation since we don't have actual debt data
     const estimatedMonthlyDebt = recentTransactions
-      .filter(t => t.category.toLowerCase().includes('debt') || t.category.toLowerCase().includes('loan') || t.category.toLowerCase().includes('credit'))
+      .filter(t => 
+        t.category.toLowerCase().includes('debt') || 
+        t.category.toLowerCase().includes('loan') || 
+        t.category.toLowerCase().includes('credit') ||
+        t.category.toLowerCase().includes('utang')
+      )
       .reduce((sum, t) => sum + t.amount, 0) / months;
     
-    const debtToIncomeRatio = avgMonthlyIncome > 0 ? (estimatedMonthlyDebt / avgMonthlyIncome) * 100 : 0;
+    // Only include debt-to-income if we have debt data
+    let debtToIncomeRatio;
+    let debtToIncomeMetric;
+    
+    if (estimatedMonthlyDebt > 0) {
+      debtToIncomeRatio = avgMonthlyIncome > 0 ? (estimatedMonthlyDebt / avgMonthlyIncome) * 100 : 0;
+      debtToIncomeMetric = {
+        value: debtToIncomeRatio,
+        isHealthy: debtToIncomeRatio < 30,
+        formula: 'Estimasi Pembayaran Utang Bulanan / Pendapatan Bulanan × 100%',
+        description: 'Persentase pendapatan yang digunakan untuk membayar utang'
+      };
+    }
     
     // Financial metrics for the Analysis page
-    const financialMetrics = {
+    const financialMetrics: TransactionAnalytics['financialMetrics'] = {
       liquidity: {
         value: liquidityRatio,
         isHealthy: liquidityRatio >= 3 && liquidityRatio <= 6,
         formula: 'Saldo Bersih / Rata-rata Pengeluaran Bulanan',
         description: 'Berapa bulan pengeluaran yang dapat ditanggung dengan uang yang tersedia'
-      },
-      debtToIncome: {
-        value: debtToIncomeRatio,
-        isHealthy: debtToIncomeRatio < 30,
-        formula: 'Estimasi Pembayaran Utang Bulanan / Pendapatan Bulanan × 100%',
-        description: 'Persentase pendapatan yang digunakan untuk membayar utang'
       },
       savingsRate: {
         value: savingsRatio,
@@ -210,6 +232,11 @@ export function useTransactionAnalytics(transactions: Transaction[], months = 6)
         description: 'Persentase pendapatan yang digunakan untuk pengeluaran'
       }
     };
+
+    // Add debt-to-income if we have data
+    if (debtToIncomeMetric) {
+      financialMetrics.debtToIncome = debtToIncomeMetric;
+    }
 
     return {
       totalIncome,
