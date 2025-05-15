@@ -156,7 +156,7 @@ export function useTransactionAnalytics(transactions: Transaction[], months = 6)
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
 
-    // Calculate current month savings and ratio
+    // Calculate current month savings and ratio - Make specific to ONE month
     const currentMonthStart = startOfMonth(currentDate);
     const currentMonthEnd = endOfMonth(currentDate);
     
@@ -207,7 +207,7 @@ export function useTransactionAnalytics(transactions: Transaction[], months = 6)
         value: debtToIncomeRatio,
         isHealthy: debtToIncomeRatio < 30,
         formula: 'Estimasi Pembayaran Utang Bulanan / Pendapatan Bulanan × 100%',
-        description: 'Persentase pendapatan yang digunakan untuk membayar utang'
+        description: '' // Removed description as requested
       };
     }
     
@@ -215,15 +215,15 @@ export function useTransactionAnalytics(transactions: Transaction[], months = 6)
     const financialMetrics: TransactionAnalytics['financialMetrics'] = {
       liquidity: {
         value: liquidityRatio,
-        isHealthy: liquidityRatio >= 3 && liquidityRatio <= 6,
+        isHealthy: liquidityRatio >= 3,  // Changed to match new rules (≥3 is healthy, >6 is very healthy)
         formula: 'Saldo Bersih / Rata-rata Pengeluaran Bulanan',
         description: 'Berapa bulan pengeluaran yang dapat ditanggung dengan uang yang tersedia'
       },
       savingsRate: {
-        value: savingsRatio,
-        isHealthy: savingsRatio > 20,
+        value: savingsRatio,  // Using current month savings ratio for Tingkat Tabungan
+        isHealthy: savingsRatio > 10,  // Keep threshold at 10% for healthy
         formula: '(Pendapatan - Pengeluaran) / Pendapatan × 100%',
-        description: 'Persentase pendapatan yang berhasil ditabung'
+        description: 'Persentase pendapatan bulan ini yang berhasil ditabung'  // Updated to specify current month
       },
       expenseRatio: {
         value: expenseToIncomeRatio,

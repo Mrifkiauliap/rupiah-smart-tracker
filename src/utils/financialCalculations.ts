@@ -64,7 +64,10 @@ export const calculateFinancialHealth = (
     }
   };
 
-  results.liquidity.isHealthy = results.liquidity.value >= 3 && results.liquidity.value <= 6;
+  // New logic for liquidity: 3-6 is healthy, >6 is very healthy (both considered "isHealthy: true")
+  const liquidityValue = results.liquidity.value;
+  results.liquidity.isHealthy = liquidityValue >= 3;
+  
   results.currentRatio.isHealthy = results.currentRatio.value > 1;
   results.savingsRatio.isHealthy = results.savingsRatio.value > 10;
   results.debtRatio.isHealthy = results.debtRatio.value < 50;
@@ -74,4 +77,3 @@ export const calculateFinancialHealth = (
 
   return results;
 };
-

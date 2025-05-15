@@ -65,6 +65,8 @@ const formSchema = z.object({
   }),
 });
 
+type FormValues = z.infer<typeof formSchema>;
+
 const FinancialData = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -75,7 +77,7 @@ const FinancialData = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('6months');
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       cash_equivalents: 0,
@@ -112,10 +114,10 @@ const FinancialData = () => {
     return null;
   }
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: FormValues) => {
     try {
       setIsSubmitting(true);
-      await saveFinancialData.mutateAsync(values);
+      await saveFinancialData.mutateAsync(values as any);
       toast({
         title: "Data berhasil disimpan",
         description: "Data keuangan Anda telah berhasil diperbarui.",
@@ -202,7 +204,7 @@ const FinancialData = () => {
                     Pilih rentang waktu untuk mengambil data transaksi
                   </p>
                   <div className="space-y-2">
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <Button
                         variant={selectedPeriod === '1month' ? 'default' : 'outline'}
                         size="sm"
@@ -226,6 +228,14 @@ const FinancialData = () => {
                         className="w-full"
                       >
                         1 Tahun
+                      </Button>
+                      <Button
+                        variant={selectedPeriod === 'all' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setSelectedPeriod('all')}
+                        className="w-full"
+                      >
+                        Semua Data
                       </Button>
                     </div>
                     <Button 

@@ -31,7 +31,7 @@ export type FinancialDataInput = {
   investment_assets: number;
 };
 
-export type TimePeriod = '1month' | '6months' | '1year';
+export type TimePeriod = '1month' | '6months' | '1year' | 'all';
 
 export function useFinancialData() {
   const queryClient = useQueryClient();
@@ -52,9 +52,22 @@ export function useFinancialData() {
   };
 
   const createFinancialData = async (values: FinancialDataInput): Promise<FinancialData> => {
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
+
+    // Add user_id to the values
+    const dataWithUserId = {
+      ...values,
+      user_id: user.id
+    };
+
     const { data, error } = await supabase
       .from('financial_data')
-      .insert(values)
+      .insert(dataWithUserId)
       .select('*')
       .single();
 
@@ -112,6 +125,7 @@ export function useFinancialData() {
     // Calculate date range based on selected period
     const now = new Date();
     let startDate = new Date();
+    let useAllData = false;
     
     switch(period) {
       case '1month':
@@ -123,17 +137,25 @@ export function useFinancialData() {
       case '1year':
         startDate.setFullYear(now.getFullYear() - 1);
         break;
+      case 'all':
+        useAllData = true;
+        break;
       default:
         startDate.setMonth(now.getMonth() - 6); // Default to 6 months
     }
 
     const startDateString = startDate.toISOString();
 
-    // First get the transactions data within the selected period
-    const { data: transactions, error: transactionsError } = await supabase
+    // First get the transactions data within the selected period (or all transactions)
+    const transactionsQuery = supabase
       .from('transactions')
-      .select('*')
-      .gte('date', startDateString);
+      .select('*');
+      
+    if (!useAllData) {
+      transactionsQuery.gte('date', startDateString);
+    }
+    
+    const { data: transactions, error: transactionsError } = await transactionsQuery;
 
     if (transactionsError) {
       console.error("Error fetching transactions:", transactionsError);
@@ -150,7 +172,23 @@ export function useFinancialData() {
       .reduce((sum, tx) => sum + Number(tx.amount), 0);
 
     // Calculate monthly average expenses
-    const monthsDiff = period === '1month' ? 1 : (period === '6months' ? 6 : 12);
+    // For all data, estimate months based on oldest transaction date
+    let monthsDiff;
+    if (useAllData && transactions.length > 0) {
+      // Find oldest transaction date
+      const dates = transactions.map(tx => new Date(tx.date));
+      const oldestDate = new Date(Math.min(...dates.map(d => d.getTime())));
+      
+      // Calculate months difference between oldest transaction and now
+      monthsDiff = (now.getFullYear() - oldestDate.getFullYear()) * 12 + 
+                  (now.getMonth() - oldestDate.getMonth());
+      
+      // Use at least 1 month to avoid division by zero
+      monthsDiff = Math.max(1, monthsDiff);
+    } else {
+      monthsDiff = period === '1month' ? 1 : (period === '6months' ? 6 : 12);
+    }
+    
     const monthlyExpenses = expenses / monthsDiff;
 
     const debtPayments = transactions
@@ -161,6 +199,13 @@ export function useFinancialData() {
         tx.category.toLowerCase().includes('credit')
       ))
       .reduce((sum, tx) => sum + Number(tx.amount), 0);
+
+    // Get current user
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      throw new Error("User not authenticated");
+    }
 
     // Get current financial data
     const currentData = await fetchFinancialData();
@@ -190,14 +235,15 @@ export function useFinancialData() {
       return data;
     } else {
       // If no data exists, create with default values for other fields
-      const newData: FinancialDataInput = {
+      const newData = {
         ...updatedValues,
         cash_equivalents: Math.max(0, income - expenses), // Estimate cash as net income
         short_term_debt: 0,
         total_debt: debtPayments * 12, // Rough estimate of total debt based on payments
         total_assets: Math.max(0, income - expenses) * 2, // Very rough estimate
-        investment_assets: 0
-      } as FinancialDataInput;
+        investment_assets: 0,
+        user_id: user.id  // Include user_id for new records
+      };
 
       const { data, error } = await supabase
         .from('financial_data')

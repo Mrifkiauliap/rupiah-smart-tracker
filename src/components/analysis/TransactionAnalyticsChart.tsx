@@ -1,6 +1,8 @@
 
-// We only need to modify a small part of the file to ensure the financial health radar chart uses all available metrics
-// Update the code that prepares data for the financial health radar chart
+// We need to update the financial health metrics display to fix the issues with labels and data:
+// 1. Remove description label for Utang/Pendapatan
+// 2. Make Tingkat Tabungan specific to one month
+// 3. Align radar chart metrics with displayed metrics
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
@@ -22,7 +24,7 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
   const categoryData = analytics.categoryBreakdown;
   const { theme } = useTheme();
   
-  // Prepare data for financial health radar chart
+  // Prepare data for financial health radar chart - make sure it matches the displayed metrics
   const financialHealthData = [
     {
       metric: "Likuiditas",
@@ -122,35 +124,144 @@ const TransactionAnalyticsChart = ({ analytics, formatCurrency }: TransactionAna
             
             <div className="space-y-6">
               <div className="space-y-4">
-                {Object.entries(analytics.financialMetrics).map(([key, metric]) => (
-                  <div key={key} className={`p-4 rounded-lg border transition-all ${
-                    metric.isHealthy 
+                {/* Liquidity */}
+                <div className={`p-4 rounded-lg border transition-all ${
+                  analytics.financialMetrics.liquidity.isHealthy 
+                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                    : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                }`}>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Likuiditas</span>
+                    {analytics.financialMetrics.liquidity.isHealthy ? (
+                      <Badge className="bg-green-500 hover:bg-green-600">
+                        {analytics.financialMetrics.liquidity.value >= 6 ? "Sangat Bagus" : "Cukup Oke"}
+                      </Badge>
+                    ) : (
+                      <Badge variant="destructive">Perhatikan</Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Berapa bulan pengeluaran yang dapat ditanggung dengan uang yang tersedia</span>
+                    <span className={`font-semibold ${analytics.financialMetrics.liquidity.isHealthy ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                      {analytics.financialMetrics.liquidity.value.toFixed(2)}x
+                    </span>
+                  </div>
+                </div>
+
+                {/* Savings Rate - Make specific to one month */}
+                <div className={`p-4 rounded-lg border transition-all ${
+                  analytics.financialMetrics.savingsRate.isHealthy 
+                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                    : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                }`}>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Tingkat Tabungan</span>
+                    {analytics.financialMetrics.savingsRate.isHealthy ? (
+                      <Badge className="bg-green-500 hover:bg-green-600">Sehat</Badge>
+                    ) : (
+                      <Badge variant="destructive">Perhatikan</Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Persentase pendapatan bulan ini yang berhasil ditabung</span>
+                    <span className={`font-semibold ${analytics.financialMetrics.savingsRate.isHealthy ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                      {analytics.financialMetrics.savingsRate.value.toFixed(2)}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Expense Ratio */}
+                <div className={`p-4 rounded-lg border transition-all ${
+                  analytics.financialMetrics.expenseRatio.isHealthy 
+                    ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                    : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                }`}>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Rasio Pengeluaran</span>
+                    {analytics.financialMetrics.expenseRatio.isHealthy ? (
+                      <Badge className="bg-green-500 hover:bg-green-600">Sehat</Badge>
+                    ) : (
+                      <Badge variant="destructive">Perhatikan</Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Persentase pendapatan yang digunakan untuk pengeluaran</span>
+                    <span className={`font-semibold ${analytics.financialMetrics.expenseRatio.isHealthy ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                      {analytics.financialMetrics.expenseRatio.value.toFixed(2)}%
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Debt to Income Ratio - Remove description as requested */}
+                {analytics.financialMetrics.debtToIncome && (
+                  <div className={`p-4 rounded-lg border transition-all ${
+                    analytics.financialMetrics.debtToIncome.isHealthy 
                       ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
                       : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
                   }`}>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium">{
-                        key === 'liquidity' ? 'Likuiditas' :
-                        key === 'debtToIncome' ? 'Utang/Pendapatan' :
-                        key === 'savingsRate' ? 'Tingkat Tabungan' : 
-                        key === 'expenseRatio' ? 'Rasio Pengeluaran' :
-                        key === 'solvencyRatio' ? 'Solvensi' :
-                        key === 'investmentRatio' ? 'Investasi' : key
-                      }</span>
-                      {metric.isHealthy ? (
+                      <span className="font-medium">Utang/Pendapatan</span>
+                      {analytics.financialMetrics.debtToIncome.isHealthy ? (
                         <Badge className="bg-green-500 hover:bg-green-600">Sehat</Badge>
                       ) : (
                         <Badge variant="destructive">Perhatikan</Badge>
                       )}
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">{metric.description}</span>
-                      <span className={`font-semibold ${metric.isHealthy ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
-                        {key === 'liquidity' ? metric.value.toFixed(2) + 'x' : metric.value.toFixed(2) + '%'}
+                      <span className="text-sm text-muted-foreground"></span> {/* Empty description as requested */}
+                      <span className={`font-semibold ${analytics.financialMetrics.debtToIncome.isHealthy ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                        {analytics.financialMetrics.debtToIncome.value.toFixed(2)}%
                       </span>
                     </div>
                   </div>
-                ))}
+                )}
+
+                {/* Conditionally show other available metrics */}
+                {analytics.financialMetrics.solvencyRatio && (
+                  <div className={`p-4 rounded-lg border transition-all ${
+                    analytics.financialMetrics.solvencyRatio.isHealthy 
+                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                      : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                  }`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium">Solvensi</span>
+                      {analytics.financialMetrics.solvencyRatio.isHealthy ? (
+                        <Badge className="bg-green-500 hover:bg-green-600">Sehat</Badge>
+                      ) : (
+                        <Badge variant="destructive">Perhatikan</Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Kesehatan keuangan jangka panjang</span>
+                      <span className={`font-semibold ${analytics.financialMetrics.solvencyRatio.isHealthy ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                        {analytics.financialMetrics.solvencyRatio.value.toFixed(2)}%
+                      </span>
+                    </div>
+                  </div>
+                )}
+                
+                {analytics.financialMetrics.investmentRatio && (
+                  <div className={`p-4 rounded-lg border transition-all ${
+                    analytics.financialMetrics.investmentRatio.isHealthy 
+                      ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' 
+                      : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+                  }`}>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-medium">Investasi</span>
+                      {analytics.financialMetrics.investmentRatio.isHealthy ? (
+                        <Badge className="bg-green-500 hover:bg-green-600">Sehat</Badge>
+                      ) : (
+                        <Badge variant="destructive">Perhatikan</Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Alokasi aset untuk investasi</span>
+                      <span className={`font-semibold ${analytics.financialMetrics.investmentRatio.isHealthy ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
+                        {analytics.financialMetrics.investmentRatio.value.toFixed(2)}%
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
