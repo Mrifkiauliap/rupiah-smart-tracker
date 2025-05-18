@@ -70,7 +70,7 @@ Tanpa perlu meng-install, Anda bisa melihat aplikasi ini langsung di:
 * Ringkasan finansial
 * Analisa kesehatan finansial menggunakan grafik interaktif
 * Sistem pakar dengan metode forward chaining
-* Antarmuka bersih, modern, dan responsif (mobile-friendly)
+* Antarmuka bersih, modern, dan responsif
 
 ---
 
