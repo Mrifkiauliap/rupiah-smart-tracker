@@ -11,13 +11,12 @@ Halo! 👋 Terima kasih sudah mengunjungi repositori ini.
 
 ### 📥 Opsi 1: Jalankan Secara Lokal
 
-1. **Ekstrak file ZIP** proyek ini  
+1. Ekstrak file ZIP proyek ini  
    > Catatan: folder `node_modules` tidak disertakan
 
 2. Buka terminal di dalam folder proyek
 
 3. Jalankan perintah berikut untuk meng-install dependency:
-   ```bash
    npm install
 ````
 
@@ -55,7 +54,7 @@ Halo! 👋 Terima kasih sudah mengunjungi repositori ini.
 
 ---
 
-### 🌐 Opsi 3: Akses Online (Live Preview)
+### 🌐 Opsi 3: Akses Online (Vercel)
 
 Tanpa perlu meng-install, Anda bisa melihat aplikasi ini langsung di:
 
@@ -76,17 +75,17 @@ Tanpa perlu meng-install, Anda bisa melihat aplikasi ini langsung di:
 
 ## ❓ Masalah Umum
 
-* **`npm install` gagal**
+* npm install` gagal
 
   * Pastikan Node.js telah terinstal dengan versi terbaru
   * Jika masih error, hapus `package-lock.json` lalu jalankan ulang `npm install`
 
-* **`npm run dev` tidak jalan**
+* npm run dev` tidak jalan
 
   * Periksa apakah port 5173 sedang dipakai aplikasi lain
   * Restart terminal atau komputer jika perlu
 
-* **.env tidak diperlukan**
+* env tidak diperlukan
 
   * Semua konfigurasi sudah termasuk dalam source code, jadi tidak perlu membuat file `.env` secara manual
 
@@ -94,7 +93,7 @@ Tanpa perlu meng-install, Anda bisa melihat aplikasi ini langsung di:
 
 ## 📬 Dikembangkan Oleh
 
-**Kelompok 4 – Mata Kuliah Sistem Pakar**
+Kelompok 4 – Mata Kuliah Sistem Pakar
 Universitas Samudra – Teknik Informatika
 
 | Nama                         | NIM       |
@@ -107,12 +106,7 @@ GitHub: [https://github.com/Mrifkiauliap/rupiah-smart-tracker](https://github.co
 
 ---
 
-**Terima kasih telah mencoba aplikasi ini! 💸
+Terima kasih telah mencoba aplikasi ini! 💸
 Semoga bermanfaat untuk membantu keuangan pribadi Anda. 🙌**
 
-```
-
----
-
-Kalau kamu ingin aku bantu unggah atau ubah langsung ke GitHub repo-mu (via file `README.md`), tinggal upload repo-nya atau izinkan akses, ya.
 ```
