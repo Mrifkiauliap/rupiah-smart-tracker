@@ -20,7 +20,6 @@ export interface TransactionAnalytics {
     amount: number;
     percentage: number;
   }[];
-  // Financial metrics
   financialMetrics: {
     liquidity: {
       value: number;

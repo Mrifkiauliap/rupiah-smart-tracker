@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,10 +37,10 @@ const Analysis = () => {
   const [activeTab, setActiveTab] = useState('transaction-analytics');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Pre-fill form with data from either saved financial data or transaction analytics
+  // Isi formulir dengan data dari saved financial data atau analisis transaksi
   useEffect(() => {
     if (financialData) {
-      // Use saved financial data as first priority
+      // Gunakan data keuangan yang disimpan sebagai prioritas utama
       setCashEquivalents(financialData.cash_equivalents);
       setMonthlyExpenses(financialData.monthly_expenses);
       setShortTermDebt(financialData.short_term_debt);
@@ -52,19 +51,19 @@ const Analysis = () => {
       setDebtPayment(financialData.debt_payment);
       setInvestmentAssets(financialData.investment_assets);
       
-      // Show results if we have financial data
+      // Tampilkan hasil jika kita memiliki data keuangan
       setShowResults(true);
     } else if (transactions.length > 0) {
-      // Fallback to transaction data if no financial data is saved
-      setMonthlyExpenses(analytics.totalExpense / 6); // Average monthly expenses over 6 months
+      // Jatuhkan ke analisis transaksi jika tidak ada data keuangan yang disimpan
+      setMonthlyExpenses(analytics.totalExpense / 6); // Rata-rata pengeluaran bulanan selama 6 bulan
       setTotalIncome(analytics.totalIncome);
       setSavings(analytics.netBalance > 0 ? analytics.netBalance : 0);
       
-      // Set default values for other fields
+      // Setel nilai default untuk bidang lainnya
       setCashEquivalents(analytics.netBalance > 0 ? analytics.netBalance : 10000);
       setShortTermDebt(0);
       setTotalDebt(0);
-      setTotalAssets(analytics.netBalance > 0 ? analytics.netBalance * 2 : 20000); // Rough estimate
+      setTotalAssets(analytics.netBalance > 0 ? analytics.netBalance * 2 : 20000); // Perkiraan kasar
       setDebtPayment(0);
       setInvestmentAssets(0);
       
@@ -72,7 +71,7 @@ const Analysis = () => {
     }
   }, [financialData, transactions, analytics]);
 
-  // Calculate financial health metrics
+  // Hitung metrik kesehatan keuangan
   const financialHealth = calculateFinancialHealth(
     cashEquivalents,
     monthlyExpenses,
@@ -85,13 +84,13 @@ const Analysis = () => {
     investmentAssets
   );
 
-  // Function to handle form submission and save data
+  // Fungsi untuk menangani pengiriman formulir dan menyimpan data
   const handleCalculate = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      // Save data to database
+      // Simpan data ke database
       await saveFinancialData.mutateAsync({
         cash_equivalents: cashEquivalents,
         monthly_expenses: monthlyExpenses,
@@ -127,15 +126,15 @@ const Analysis = () => {
     }).format(amount);
   };
 
-  // Generate enhanced financial metrics for display
-  // This will ensure we always have all metrics regardless of data source
+  // Buat metrik keuangan yang ditingkatkan untuk tampilan
+  // Ini akan memastikan kita selalu memiliki semua metrik terlepas dari sumber data
   const enhancedAnalytics = React.useMemo(() => {
-    // Start with the analytics from transactions
+    // Mulai dengan analisis dari transaksi
     const enhanced = { ...analytics };
     
-    // If we have financial data, replace/enhance specific metrics
+    // Jika kita memiliki data keuangan, gantikan/enhance metrik tertentu
     if (financialData) {
-      // Replace liquidity ratio if we have cash equivalents and monthly expenses
+      // Gantikan rasio likuiditas jika kita memiliki kas yang setara dan pengeluaran bulanan
       if (financialData.cash_equivalents > 0 && financialData.monthly_expenses > 0) {
         enhanced.financialMetrics.liquidity = {
           ...enhanced.financialMetrics.liquidity,
@@ -145,7 +144,7 @@ const Analysis = () => {
         };
       }
       
-      // Add/replace debt to income ratio if we have total debt and total income
+      // Tambahkan/replace rasio utang/penghasilan jika kita memiliki total utang dan total penghasilan
       if (financialData.total_debt > 0 && financialData.total_income > 0) {
         enhanced.financialMetrics.debtToIncome = {
           ...enhanced.financialMetrics.debtToIncome,
@@ -154,7 +153,7 @@ const Analysis = () => {
         };
       }
       
-      // Add/replace savings rate if we have savings and total income
+      // Tambahkan/replace tingkat tabungan jika kita memiliki tabungan dan total penghasilan
       if (financialData.savings > 0 && financialData.total_income > 0) {
         enhanced.financialMetrics.savingsRate = {
           ...enhanced.financialMetrics.savingsRate,
@@ -163,7 +162,7 @@ const Analysis = () => {
         };
       }
       
-      // Add solvency ratio if missing (based on financial data)
+      // Tambahkan rasio solvabilitas jika tidak ada (berdasarkan data keuangan)
       if (financialData.total_assets > 0) {
         enhanced.financialMetrics.solvencyRatio = {
           value: ((financialData.total_assets - financialData.total_debt) / financialData.total_assets) * 100,
@@ -173,7 +172,7 @@ const Analysis = () => {
         };
       }
       
-      // Add investment ratio if missing (based on financial data)
+      // Tambahkan rasio investasi jika tidak ada (berdasarkan data keuangan)
       if (financialData.total_assets > 0 && financialData.investment_assets > 0) {
         enhanced.financialMetrics.investmentRatio = {
           value: (financialData.investment_assets / financialData.total_assets) * 100,

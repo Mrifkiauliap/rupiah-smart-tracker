@@ -43,7 +43,7 @@ export function useFinancialData() {
       .maybeSingle();
 
     if (error) {
-      console.error("Error fetching financial data:", error);
+      console.error("Terjadi kesalahan saat mengambil data keuangan:", error);
       throw error;
     }
 
@@ -51,14 +51,14 @@ export function useFinancialData() {
   };
 
   const createFinancialData = async (values: FinancialDataInput): Promise<FinancialData> => {
-    // Get current user
+    // Mendapatkan user saat ini
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error("User tidak terautentikasi");
     }
 
-    // Add user_id to the values
+    // Tambahkan user_id ke dalam values
     const dataWithUserId = {
       ...values,
       user_id: user.id
@@ -71,7 +71,7 @@ export function useFinancialData() {
       .single();
 
     if (error) {
-      console.error("Error creating financial data:", error);
+      console.error("Terjadi kesalahan saat membuat data keuangan:", error);
       throw error;
     }
 
@@ -87,14 +87,14 @@ export function useFinancialData() {
       .single();
 
     if (error) {
-      console.error("Error updating financial data:", error);
+      console.error("Terjadi kesalahan saat memperbarui data keuangan:", error);
       throw error;
     }
 
     return data;
   };
 
-  // Reset financial data to zeros
+  // Reset data keuangan ke nilai awal
   const resetFinancialData = async (id: string): Promise<void> => {
     const resetValues: Partial<FinancialDataInput> = {
       cash_equivalents: 0,
@@ -114,14 +114,14 @@ export function useFinancialData() {
       .eq('id', id);
 
     if (error) {
-      console.error("Error resetting financial data:", error);
+      console.error("Terjadi kesalahan saat mereset data keuangan:", error);
       throw error;
     }
   };
 
-  // Sync data from transactions with specified time period
+  // Sinkronkan data dari transaksi dengan periode yang dipilih
   const syncFromTransactions = async (period: TimePeriod = '6months'): Promise<FinancialData> => {
-    // Calculate date range based on selected period
+    // Perhitungan tanggal mulai berdasarkan periode yang dipilih
     const now = new Date();
     let startDate = new Date();
     let useAllData = false;
@@ -145,7 +145,7 @@ export function useFinancialData() {
 
     const startDateString = startDate.toISOString();
 
-    // First get the transactions data within the selected period (or all transactions)
+    // Ambil data transaksi dalam periode yang dipilih (atau semua transaksi)
     const transactionsQuery = supabase
       .from('transactions')
       .select('*');
@@ -157,11 +157,11 @@ export function useFinancialData() {
     const { data: transactions, error: transactionsError } = await transactionsQuery;
 
     if (transactionsError) {
-      console.error("Error fetching transactions:", transactionsError);
+      console.error("Terjadi kesalahan saat mengambil data transaksi:", transactionsError);
       throw transactionsError;
     }
 
-    // Calculate totals from transactions
+    // Hitung total dari transaksi
     const income = transactions
       .filter(tx => tx.type === 'income')
       .reduce((sum, tx) => sum + Number(tx.amount), 0);
@@ -170,19 +170,19 @@ export function useFinancialData() {
       .filter(tx => tx.type === 'expense')
       .reduce((sum, tx) => sum + Number(tx.amount), 0);
 
-    // Calculate monthly average expenses
-    // For all data, estimate months based on oldest transaction date
+    // Hitung rata-rata bulanan dari pengeluaran
+    // Untuk semua data, perkirakan bulan berdasarkan tanggal transaksi terlama
     let monthsDiff;
     if (useAllData && transactions.length > 0) {
-      // Find oldest transaction date
+      // Cari tanggal transaksi terlama
       const dates = transactions.map(tx => new Date(tx.date));
       const oldestDate = new Date(Math.min(...dates.map(d => d.getTime())));
       
-      // Calculate months difference between oldest transaction and now
+      // Hitung bulan berbeda antara tanggal transaksi terlama dan saat ini
       monthsDiff = (now.getFullYear() - oldestDate.getFullYear()) * 12 + 
                   (now.getMonth() - oldestDate.getMonth());
       
-      // Use at least 1 month to avoid division by zero
+      // Gunakan minimal 1 bulan untuk menghindari pembagian dengan nol
       monthsDiff = Math.max(1, monthsDiff);
     } else {
       monthsDiff = period === '1month' ? 1 : (period === '6months' ? 6 : 12);
@@ -199,29 +199,29 @@ export function useFinancialData() {
       ))
       .reduce((sum, tx) => sum + Number(tx.amount), 0);
 
-    // Get current user
+    // Mendapatkan user saat ini
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error("User tidak terautentikasi");
     }
 
-    // Get current financial data
+    // Mendapatkan data keuangan saat ini
     const currentData = await fetchFinancialData();
     
-    // Calculate net balance (income - expenses)
+    // Hitung saldo bersih (pendapatan - pengeluaran)
     const netBalance = Math.max(0, income - expenses);
     
-    // Prepare updated values
+    // Siapkan nilai yang diperbarui
     const updatedValues: Partial<FinancialDataInput> = {
       total_income: income,
       monthly_expenses: monthlyExpenses,
       debt_payment: debtPayments,
-      cash_equivalents: netBalance,  // Put net balance into cash_equivalents instead of savings
-      savings: currentData?.savings || 0  // Preserve existing savings value
+      cash_equivalents: netBalance,  // Simpan saldo bersih ke dalam cash_equivalents
+      savings: currentData?.savings || 0  // Simpan nilai tabungan yang ada
     };
 
-    // Update or create financial data
+    // Perbarui atau buat data keuangan
     if (currentData) {
       const { data, error } = await supabase
         .from('financial_data')
@@ -231,20 +231,20 @@ export function useFinancialData() {
         .single();
 
       if (error) {
-        console.error("Error syncing financial data:", error);
+        console.error("Terjadi kesalahan saat memperbarui data keuangan:", error);
         throw error;
       }
       
       return data;
     } else {
-      // If no data exists, create with default values for other fields
+      // Jika tidak ada data, buat dengan nilai default untuk field lainnya
       const newData = {
         ...updatedValues,
         short_term_debt: 0,
-        total_debt: debtPayments * 12, // Rough estimate of total debt based on payments
-        total_assets: Math.max(0, income - expenses) * 2, // Very rough estimate
+        total_debt: debtPayments * 12, // Perkiraan kasar total utang berdasarkan pembayaran
+        total_assets: Math.max(0, income - expenses) * 2, // Perkiraan kasar total aset berdasarkan pendapatan - pengeluaran
         investment_assets: 0,
-        user_id: user.id  // Include user_id for new records
+        user_id: user.id  // Tambahkan user_id untuk data baru
       };
 
       const { data, error } = await supabase
@@ -254,7 +254,7 @@ export function useFinancialData() {
         .single();
 
       if (error) {
-        console.error("Error creating synced financial data:", error);
+        console.error("Terjadi kesalahan saat membuat data keuangan:", error);
         throw error;
       }
       

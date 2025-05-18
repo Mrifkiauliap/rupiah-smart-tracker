@@ -18,10 +18,24 @@ interface TransactionModalProps {
   onSubmit: (transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => void;
 }
 
-const categories = {
-  income: ['Gaji', 'Investasi', 'Bonus', 'Lainnya'],
-  expense: ['Makanan', 'Transport', 'Belanja', 'Tagihan', 'Lainnya']
-};
+  const categories = {
+    income: [
+      'Gaji',
+      'Investasi',
+      'Bonus',
+      'Hadiah',
+      'Lainnya'
+    ],
+    expense: [
+      'Makanan',
+      'Transport',
+      'Belanja',
+      'Tagihan',
+      'Hiburan',
+      'Donasi',
+      'Lainnya'
+    ]
+  };
 
 const TransactionModal = ({ isOpen, onClose, type, onSubmit }: TransactionModalProps) => {
   const [amount, setAmount] = useState('');

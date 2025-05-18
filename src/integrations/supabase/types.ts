@@ -11,10 +11,10 @@ export type Database = {
     Tables: {
       financial_data: {
         Row: {
+          id: string
           cash_equivalents: number
           created_at: string | null
           debt_payment: number
-          id: string
           investment_assets: number
           monthly_expenses: number
           savings: number
@@ -26,10 +26,10 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          id?: string
           cash_equivalents?: number
           created_at?: string | null
           debt_payment?: number
-          id?: string
           investment_assets?: number
           monthly_expenses?: number
           savings?: number
@@ -41,10 +41,10 @@ export type Database = {
           user_id: string
         }
         Update: {
+          id?: string
           cash_equivalents?: number
           created_at?: string | null
           debt_payment?: number
-          id?: string
           investment_assets?: number
           monthly_expenses?: number
           savings?: number
@@ -59,14 +59,14 @@ export type Database = {
       }
       profiles: {
         Row: {
-          created_at: string | null
           id: string
+          created_at: string | null
           name: string | null
           updated_at: string | null
         }
         Insert: {
-          created_at?: string | null
           id: string
+          created_at?: string | null
           name?: string | null
           updated_at?: string | null
         }
@@ -80,34 +80,34 @@ export type Database = {
       }
       transactions: {
         Row: {
+          id: string
           amount: number
           category: string
           created_at: string | null
           date: string | null
           description: string
-          id: string
           type: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
+          id?: string
           amount: number
           category: string
           created_at?: string | null
           date?: string | null
           description: string
-          id?: string
           type: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
+          id?: string
           amount?: number
           category?: string
           created_at?: string | null
           date?: string | null
           description?: string
-          id?: string
           type?: string
           updated_at?: string | null
           user_id?: string

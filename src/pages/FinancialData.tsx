@@ -13,13 +13,6 @@ import {
   FormLabel,
   FormMessage 
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Save, Database, RefreshCw, Trash2, Clock } from "lucide-react";

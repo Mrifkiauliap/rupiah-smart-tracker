@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -20,8 +19,8 @@ export function DangerZone() {
     
     setIsDeleting(true);
     try {
-      // First delete user's data
-      // Delete financial metrics
+      // Hapus data user terlebih dahulu
+      // Hapus metrik keuangan
       const { error: metricsError } = await supabase
         .from('financial_data')
         .delete()
@@ -29,7 +28,7 @@ export function DangerZone() {
       
       if (metricsError) throw metricsError;
       
-      // Delete transactions
+      // Hapus transaksi
       const { error: transactionsError } = await supabase
         .from('transactions')
         .delete()
@@ -37,7 +36,7 @@ export function DangerZone() {
         
       if (transactionsError) throw transactionsError;
       
-      // Delete user settings
+      // Hapus pengaturan user
       const { error: settingsError } = await supabase
         .from('user_settings')
         .delete()
@@ -45,7 +44,7 @@ export function DangerZone() {
         
       if (settingsError) throw settingsError;
       
-      // Delete profile
+      // Hapus profil
       const { error: profileError } = await supabase
         .from('profiles')
         .delete()
@@ -53,7 +52,7 @@ export function DangerZone() {
         
       if (profileError) throw profileError;
 
-      // Sign out the user first
+      // Keluar dari akun
       await signOut();
       
       toast({
@@ -61,7 +60,7 @@ export function DangerZone() {
         description: 'Semua data Anda telah dihapus dari sistem kami.',
       });
       
-      // Redirect to login page
+      // Redirect ke halaman login
       navigate('/login');
     } catch (error: any) {
       toast({
@@ -132,3 +131,4 @@ export function DangerZone() {
     </div>
   );
 }
+

@@ -19,7 +19,6 @@ const Profile = () => {
   const { settings } = useUserSettings();
 
   useEffect(() => {
-    // Get the tab from URL query param
     const query = new URLSearchParams(location.search);
     const tab = query.get('tab');
     

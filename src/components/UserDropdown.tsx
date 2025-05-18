@@ -24,14 +24,14 @@ export function UserDropdown() {
 
   const handleLogout = async () => {
     await signOut();
-    // The AuthProvider will handle navigation after signOut
+    // AuthProvider akan handle navigasi signOut()
   };
 
   const toggleTheme = async () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
     
-    // Update the user settings in the database
+    // Update user di database
     try {
       await updateSettings({ theme: newTheme });
     } catch (error) {

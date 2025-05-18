@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Transaction } from '@/types/transaction';
@@ -11,12 +10,12 @@ interface FinancialChartProps {
 
 const FinancialChart = ({ transactions }: FinancialChartProps) => {
   const [chartType, setChartType] = useState<'line' | 'bar'>('line');
-  const [timeRange, setTimeRange] = useState<7 | 30>(7); // 7 days or 30 days
+  const [timeRange, setTimeRange] = useState<7 | 30>(7); // 7 hari atau 30 hari
 
   const endDate = new Date();
   const startDate = subDays(endDate, timeRange);
   
-  // Filter transactions within the selected time range
+  // Filter transaksi dalam rentang waktu yang dipilih
   const filteredTransactions = transactions.filter(transaction => {
     try {
       const transactionDate = parseISO(transaction.date);
@@ -26,11 +25,11 @@ const FinancialChart = ({ transactions }: FinancialChartProps) => {
     }
   });
 
-  // Process data for line chart (daily aggregation)
+  // Proses data untuk chart garis (agregasi harian)
   const generateDailyData = () => {
     const dailyData: Record<string, { date: string; income: number; expense: number }> = {};
     
-    // Create entries for each day in the range
+    // Buat entri untuk setiap hari dalam rentang waktu
     for (let i = 0; i < timeRange; i++) {
       const date = subDays(endDate, i);
       const dateStr = format(date, 'yyyy-MM-dd');
@@ -41,7 +40,7 @@ const FinancialChart = ({ transactions }: FinancialChartProps) => {
       };
     }
     
-    // Add transaction data
+    // Tambahkan data transaksi
     filteredTransactions.forEach(transaction => {
       try {
         const transactionDate = parseISO(transaction.date);
@@ -55,11 +54,11 @@ const FinancialChart = ({ transactions }: FinancialChartProps) => {
           }
         }
       } catch (e) {
-        console.error('Invalid date format', transaction.date);
+        console.error('Format tanggal tidak valid', transaction.date);
       }
     });
     
-    // Convert to array sorted by date
+    // Konversi ke array yang diurutkan berdasarkan tanggal
     return Object.values(dailyData).sort((a, b) => {
       const dateA = a.date.split('/').reverse().join('');
       const dateB = b.date.split('/').reverse().join('');
@@ -178,3 +177,4 @@ const FinancialChart = ({ transactions }: FinancialChartProps) => {
 };
 
 export default FinancialChart;
+

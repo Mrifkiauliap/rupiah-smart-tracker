@@ -55,7 +55,6 @@ const Auth = () => {
     setIsLoading(true);
     
     try {
-      // 1. Register the user with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: registerEmail,
         password: registerPassword,
@@ -70,7 +69,6 @@ const Auth = () => {
         throw authError;
       }
 
-      // 2. Update the profile name explicitly to ensure it's set correctly
       if (authData.user) {
         const { error: updateError } = await supabase
           .from('profiles')
@@ -79,8 +77,6 @@ const Auth = () => {
           
         if (updateError) {
           console.error("Error updating profile name:", updateError);
-          // Continue with registration even if profile update fails
-          // The user can update their name later
         }
       }
 

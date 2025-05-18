@@ -49,7 +49,6 @@ export function useUserSettings() {
             number_format: data.number_format,
           });
         } else {
-          // If no settings found, create default settings
           const { data: newSettings, error: insertError } = await supabase
             .from('user_settings')
             .insert({
@@ -92,7 +91,7 @@ export function useUserSettings() {
       const { error } = await supabase
         .from('user_settings')
         .upsert({
-          id: settings.id, // Include ID to ensure we update, not insert
+          id: settings.id, 
           user_id: user.id,
           currency: updatedSettings.currency,
           theme: updatedSettings.theme,

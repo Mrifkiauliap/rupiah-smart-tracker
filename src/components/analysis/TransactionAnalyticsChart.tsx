@@ -1,9 +1,3 @@
-
-// We need to update the financial health metrics display to fix the issues with labels and data:
-// 1. Remove description label for Utang/Pendapatan
-// 2. Make Tingkat Tabungan specific to one month
-// 3. Align radar chart metrics with displayed metrics
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

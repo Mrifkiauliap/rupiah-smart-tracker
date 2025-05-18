@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,20 +29,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    // Set up auth state listener first
+    // Membuat listener perubahan state auth pertama
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log('Auth state changed:', event);
+        console.log('Perubahan state auth:', event);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (event === 'SIGNED_IN') {
-          // Only navigate if we're not already on the dashboard
+          // Hanya navigasi jika tidak ada di halaman dashboard
           if (location.pathname === '/login') {
             navigate('/dashboard');
           }
           
-          // Fetch user settings and apply theme when signing in
+          // Mengambil settingan user dan menerapkan tema saat masuk
           if (session?.user) {
             setTimeout(async () => {
               const { data } = await supabase
@@ -53,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 .single();
                 
               if (data && data.theme) {
-                // Convert string to 'dark' | 'light' | 'system' type
+                // Konversi string ke 'dark' | 'light' | 'system' type
                 const themeValue = data.theme === 'dark' || data.theme === 'light' ? data.theme : 'system';
                 setTheme(themeValue);
               }
@@ -65,12 +64,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
-    // Then check for existing session
+    // Lalu cek untuk session yang sudah ada
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
-      // Fetch user settings and apply theme for existing session
+      // Mengambil settingan user dan menerapkan tema untuk session yang sudah ada
       if (session?.user) {
         setTimeout(async () => {
           const { data } = await supabase
@@ -80,14 +79,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             .single();
             
           if (data && data.theme) {
-            // Convert string to 'dark' | 'light' | 'system' type
+            // Konversi string ke 'dark' | 'light' | 'system' type
             const themeValue = data.theme === 'dark' || data.theme === 'light' ? data.theme : 'system';
             setTheme(themeValue);
           }
         }, 0);
       }
       
-      // Only redirect to login if not already there and no session
+      // Hanya redirect ke login jika tidak ada di halaman login dan tidak ada session
       if (!session && location.pathname !== '/login') {
         navigate('/login');
       }
@@ -104,7 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return <div className="flex items-center justify-center h-screen">Sedang memuat...</div>;
   }
 
   return (
@@ -113,3 +112,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     </AuthContext.Provider>
   );
 };
+

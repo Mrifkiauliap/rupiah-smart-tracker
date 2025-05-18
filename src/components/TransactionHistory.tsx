@@ -60,8 +60,22 @@ const TransactionHistory = ({ transactions, onEdit, onDelete, formatCurrency }: 
   };
 
   const categories = {
-    income: ['Gaji', 'Investasi', 'Bonus', 'Lainnya'],
-    expense: ['Makanan', 'Transport', 'Belanja', 'Tagihan', 'Lainnya']
+    income: [
+      'Gaji',
+      'Investasi',
+      'Bonus',
+      'Hadiah',
+      'Lainnya'
+    ],
+    expense: [
+      'Makanan',
+      'Transport',
+      'Belanja',
+      'Tagihan',
+      'Hiburan',
+      'Donasi',
+      'Lainnya'
+    ]
   };
 
   const formatDate = (dateString: string) => {
