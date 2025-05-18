@@ -8,31 +8,7 @@ Sipaku adalah aplikasi pelacak keuangan pribadi yang membantu pengguna dalam men
 
 ## 🛠️ Cara Install & Jalankan Aplikasi
 
-### 📥 Opsi 1: Jalankan Secara Lokal
-
-1. Ekstrak file ZIP proyek ini  
-   > Catatan: folder `node_modules` tidak disertakan
-
-2. Buka terminal di dalam folder proyek
-
-3. Jalankan perintah berikut untuk meng-install dependency:
-
-   ```bash
-   npm install
-   ```
-
-4. Jalankan aplikasi dengan perintah:
-
-   ```bash
-   npm run dev
-   ```
-
-   Aplikasi akan berjalan di:
-   👉 `http://localhost:5173`
-
----
-
-### 📦 Opsi 2: Melalui GitHub
+### 📦 Opsi 1: Melalui GitHub
 
 1. Clone repositori ini:
 
@@ -53,9 +29,12 @@ Sipaku adalah aplikasi pelacak keuangan pribadi yang membantu pengguna dalam men
    npm run dev
    ```
 
+   Aplikasi akan berjalan di:
+   http://localhost:8080
+
 ---
 
-### 🌐 Opsi 3: Akses Online (Vercel)
+### 🌐 Opsi 2: Akses Online (Vercel)
 
 Tanpa perlu meng-install, Anda bisa melihat aplikasi ini langsung di:
 
@@ -81,7 +60,7 @@ Tanpa perlu meng-install, Anda bisa melihat aplikasi ini langsung di:
   * Jika masih error, hapus `package-lock.json` lalu jalankan ulang `npm install`
 
 * npm run dev` tidak jalan
-  * Periksa apakah port 5173 sedang dipakai aplikasi lain
+  * Periksa apakah port 8080 sedang dipakai aplikasi lain
   * Restart terminal atau komputer jika perlu
 
 ---
