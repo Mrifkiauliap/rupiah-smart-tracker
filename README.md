@@ -1,7 +1,3 @@
-Berikut adalah versi **README.md** yang siap kamu gunakan untuk repositori GitHub kamu. Ini versi markdown dari isi `BACA INI.txt`, sudah disesuaikan agar tampil bagus di GitHub:
-
----
-
 ````markdown
 # 📌 Sistem Pakar Pengelolaan Rekomendasi Keuangan Pribadi
 
