@@ -1,73 +1,81 @@
-# Welcome to your Lovable project
+📌 SISTEM PAKAR PENGELOLAAN REKOMENDASI KEUANGAN PRIBADI
 
-## Project info
+Halo! 👋 Terima kasih sudah mengunjungi repositori ini.
 
-**URL**: https://lovable.dev/projects/37ef2e8a-31da-4d86-9696-3c4f538d56bd
+**Sipaku** adalah aplikasi pelacak keuangan pribadi yang membantu user dalam mengelola pemasukan dan pengeluaran serta melihat analisa kesehatan finansial berdasarkan sistem pakar menggunakan metode **forward chaining**.
 
-## How can I edit this code?
+=====================================
+🛠️ CARA INSTALL & JALANKAN APLIKASI
+=====================================
 
-There are several ways of editing your application.
+📥 OPSI 1: JALANKAN SECARA LOKAL
 
-**Use Lovable**
+1. Ekstrak file ZIP proyek ini.
+   (Catatan: folder `node_modules` tidak disertakan)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/37ef2e8a-31da-4d86-9696-3c4f538d56bd) and start prompting.
+2. Buka terminal di dalam folder proyek.
 
-Changes made via Lovable will be committed automatically to this repo.
+3. Jalankan perintah berikut untuk meng-install dependency:
+   npm install
 
-**Use your preferred IDE**
+4. Jalankan aplikasi dengan perintah:
+   npm run dev
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+   Aplikasi akan berjalan di:
+   http://localhost:5173
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+📦 OPSI 2: MELALUI GITHUB
 
-Follow these steps:
+1. Clone repositori ini dari GitHub:
+   git clone https://github.com/Mrifkiauliap/rupiah-smart-tracker.git
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. Masuk ke folder proyek:
+   cd rupiah-smart-tracker
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3. Jalankan:
+   npm install
+   npm run dev
 
-# Step 3: Install the necessary dependencies.
-npm i
+🌐 OPSI 3: LIHAT APLIKASI ONLINE
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+Aplikasi ini juga dapat langsung diakses melalui:
 
-**Edit a file directly in GitHub**
+👉 https://sistem-pakar-pengelolaan-keuangan-pribadi.vercel.app/
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+=====================================
+📋 FITUR UTAMA
+=====================================
+- Tambah, edit, dan hapus transaksi
+- Kategori pemasukan dan pengeluaran
+- Ringkasan finansial
+- Analisa kesehatan finansial dengan berbagai macam diagram/grafik
+- Sistem pakar berbasis forward chaining untuk rekomendasi
+- Tampilan bersih dan responsif
 
-**Use GitHub Codespaces**
+=====================================
+❓ MASALAH UMUM
+=====================================
+- Jika `npm install` gagal:
+  - Pastikan sudah meng-install Node.js versi terbaru.
+  - Coba hapus file `package-lock.json` lalu jalankan ulang `npm install`.
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Jika aplikasi tidak berjalan setelah `npm run dev`:
+  - Pastikan tidak ada port yang bentrok (default: 5173).
+  - Coba jalankan ulang terminal atau restart komputer.
 
-## What technologies are used for this project?
+- Tidak perlu membuat file `.env`, karena semua konfigurasi sudah termasuk dalam kode.
 
-This project is built with:
+=====================================
+📬 DIKEMBANGKAN OLEH
+=====================================
+💼 KELOMPOK 4 - Mata Kuliah **Sistem Pakar**  
+Universitas Samudra - Teknik Informatika
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Muhammad Rifki Aulia Pratama  (230504089)  
+2. Notinus Selegani              (220504029)  
+3. Irma Safitri                  (230504082)
 
-## How can I deploy this project?
+GitHub: https://github.com/Mrifkiauliap/rupiah-smart-tracker
 
-Simply open [Lovable](https://lovable.dev/projects/37ef2e8a-31da-4d86-9696-3c4f538d56bd) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Terima kasih sudah mencoba aplikasi ini! 💸
+Semoga bermanfaat untuk membantu keuangan pribadi Anda. 🙌
