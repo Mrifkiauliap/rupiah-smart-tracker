@@ -1,4 +1,3 @@
-````markdown
 # 📌 Sistem Pakar Pengelolaan Rekomendasi Keuangan Pribadi
 
 Halo! 👋 Terima kasih sudah mengunjungi repositori ini.
@@ -17,8 +16,10 @@ Halo! 👋 Terima kasih sudah mengunjungi repositori ini.
 2. Buka terminal di dalam folder proyek
 
 3. Jalankan perintah berikut untuk meng-install dependency:
+
+   ```bash
    npm install
-````
+   ```
 
 4. Jalankan aplikasi dengan perintah:
 
@@ -76,18 +77,12 @@ Tanpa perlu meng-install, Anda bisa melihat aplikasi ini langsung di:
 ## ❓ Masalah Umum
 
 * npm install` gagal
-
   * Pastikan Node.js telah terinstal dengan versi terbaru
   * Jika masih error, hapus `package-lock.json` lalu jalankan ulang `npm install`
 
 * npm run dev` tidak jalan
-
   * Periksa apakah port 5173 sedang dipakai aplikasi lain
   * Restart terminal atau komputer jika perlu
-
-* env tidak diperlukan
-
-  * Semua konfigurasi sudah termasuk dalam source code, jadi tidak perlu membuat file `.env` secara manual
 
 ---
 
