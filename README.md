@@ -2,7 +2,7 @@
 
 Halo! 👋 Terima kasih sudah mengunjungi repositori ini.
 
-**Sipaku** adalah aplikasi pelacak keuangan pribadi yang membantu pengguna dalam mengelola pemasukan dan pengeluaran serta memberikan analisa kesehatan finansial berdasarkan sistem pakar menggunakan metode **forward chaining**.
+Sipaku adalah aplikasi pelacak keuangan pribadi yang membantu pengguna dalam mengelola pemasukan dan pengeluaran serta memberikan analisa kesehatan finansial berdasarkan sistem pakar menggunakan metode **forward chaining**.
 
 ---
 
@@ -102,6 +102,6 @@ GitHub: [https://github.com/Mrifkiauliap/rupiah-smart-tracker](https://github.co
 ---
 
 Terima kasih telah mencoba aplikasi ini! 💸
-Semoga bermanfaat untuk membantu keuangan pribadi Anda. 🙌**
+Semoga bermanfaat untuk membantu keuangan pribadi Anda. 🙌
 
 ```
